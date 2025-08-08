@@ -68,6 +68,20 @@
         .performance-good { border-left-color: #3b82f6; }
         .performance-average { border-left-color: #f59e0b; }
         .performance-poor { border-left-color: #ef4444; }
+        
+        .loading-spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #dc2626;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -100,7 +114,8 @@
                 <button type="submit" id="loginBtn"
                         class="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition duration-200 font-semibold">
                     <i class="fas fa-sign-in-alt mr-2"></i>
-                    Login
+                    <span id="loginBtnText">Login</span>
+                    <div id="loginSpinner" class="loading-spinner mx-auto hidden" style="width: 20px; height: 20px;"></div>
                 </button>
             </form>
             
@@ -122,6 +137,9 @@
                         </div>
                     </div>
                     <div class="flex items-center space-x-4">
+                        <button onclick="refreshData()" class="text-blue-600 hover:text-blue-800" title="Refresh Data">
+                            <i class="fas fa-sync-alt text-xl" id="refreshIcon"></i>
+                        </button>
                         <div class="text-right">
                             <p class="text-sm text-gray-600">Welcome,</p>
                             <p class="font-semibold text-gray-900" id="userName"></p>
@@ -135,7 +153,16 @@
             </div>
         </header>
 
-        <div class="container mx-auto px-4 py-8">
+        <!-- Loading State -->
+        <div id="loadingState" class="container mx-auto px-4 py-8">
+            <div class="text-center">
+                <div class="loading-spinner mx-auto mb-4"></div>
+                <p class="text-gray-600">Loading dashboard data...</p>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div id="dashboardContent" class="container mx-auto px-4 py-8 hidden">
             <!-- National Progress Section -->
             <div class="mb-8">
                 <div class="bg-white rounded-lg shadow-lg p-6">
@@ -315,568 +342,199 @@
     </div>
 
     <script>
-        // Sample Data (Replace with Google Sheets API integration)
-        const sampleUsers = [
-            { name: "ENI KHUZAIMAH", email: "eni.khuzaimah@apotekalpro.id", password: "Alpro@123", role: "Area Manager", status: "Active" },
-            { name: "TOMAS", email: "khoo.ziyu@apotekalpro.id", password: "alpro@123", role: "CHIEF", status: "Active" },
-            { name: "ADE IRMA SEPTIANI AIDHA", email: "ade.irma@apotekalpro.id", password: "Alpro@123", role: "Area Manager", status: "Active" },
-            { name: "DEVI", email: "devi.purba@apotekalpro.id", password: "Alpro@123", role: "STRATEGY", status: "Active" }
-        ];
-
-        const sampleOutlets = [
-            {
-                outlet: "BTTGBI1",
-                name: "APOTEK ALPRO BOLSENA ILAGGO",
-                am: "SANNAULI SIAHAAN",
-                totalTarget: 93000000,
-                dailyTarget: 9300000,
-                d1: 8500000, d1Percent: 91.4,
-                d2: 9100000, d2Percent: 97.8,
-                d3: 8800000, d3Percent: 94.6,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "BTTGLK1",
-                name: "APOTEK ALPRO LIPPO KARAWACI",
-                am: "NUR ADE ARYANI",
-                totalTarget: 95000000,
-                dailyTarget: 9500000,
-                d1: 9800000, d1Percent: 103.2,
-                d2: 9200000, d2Percent: 96.8,
-                d3: 9600000, d3Percent: 101.1,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBSOC1",
-                name: "APOTEK ALPRO OLYMPIC CIKARANG",
-                am: "ADE IRMA SEPTIANI AIDHA",
-                totalTarget: 192000000,
-                dailyTarget: 19200000,
-                d1: 20500000, d1Percent: 106.8,
-                d2: 19800000, d2Percent: 103.1,
-                d3: 20900000, d3Percent: 108.9,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "BTTSGV1",
-                name: "APOTEK ALPRO GOLDEN VIENNA",
-                am: "FUNNA ANINDYA",
-                totalTarget: 126000000,
-                dailyTarget: 12600000,
-                d1: 11800000, d1Percent: 93.7,
-                d2: 12900000, d2Percent: 102.4,
-                d3: 12200000, d3Percent: 96.8,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBSKP1",
-                name: "APOTEK ALPRO KEMANG PRATAMA",
-                am: "CAMELIA FITRIANI",
-                totalTarget: 128000000,
-                dailyTarget: 12800000,
-                d1: 13200000, d1Percent: 103.1,
-                d2: 12600000, d2Percent: 98.4,
-                d3: 13800000, d3Percent: 107.8,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "BTTGBW1",
-                name: "APOTEK ALPRO BANJAR WIJAYA",
-                am: "NUR ADE ARYANI",
-                totalTarget: 75000000,
-                dailyTarget: 7500000,
-                d1: 7200000, d1Percent: 96.0,
-                d2: 7800000, d2Percent: 104.0,
-                d3: 7400000, d3Percent: 98.7,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "BTTGC21",
-                name: "APOTEK ALPRO EXPRESS CILEDUG INDAH 2",
-                am: "FUNNA ANINDYA",
-                totalTarget: 30000000,
-                dailyTarget: 3000000,
-                d1: 2800000, d1Percent: 93.3,
-                d2: 3100000, d2Percent: 103.3,
-                d3: 2900000, d3Percent: 96.7,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "BTTGCD1",
-                name: "APOTEK ALPRO EXPRESS CIPADU",
-                am: "SANNAULI SIAHAAN",
-                totalTarget: 45000000,
-                dailyTarget: 4500000,
-                d1: 4200000, d1Percent: 93.3,
-                d2: 4700000, d2Percent: 104.4,
-                d3: 4400000, d3Percent: 97.8,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "BTTGCM1",
-                name: "APOTEK ALPRO EXPRESS CIPTO MANGUNKUSUMO",
-                am: "SANNAULI SIAHAAN",
-                totalTarget: 36000000,
-                dailyTarget: 3600000,
-                d1: 3400000, d1Percent: 94.4,
-                d2: 3700000, d2Percent: 102.8,
-                d3: 3500000, d3Percent: 97.2,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "BTTGCR1",
-                name: "APOTEK ALPRO CITRA RAYA",
-                am: "SANNAULI SIAHAAN",
-                totalTarget: 59000000,
-                dailyTarget: 5900000,
-                d1: 5600000, d1Percent: 94.9,
-                d2: 6100000, d2Percent: 103.4,
-                d3: 5800000, d3Percent: 98.3,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "BTTGDG1",
-                name: "APOTEK ALPRO DUTA GARDEN",
-                am: "NUR ADE ARYANI",
-                totalTarget: 57000000,
-                dailyTarget: 5700000,
-                d1: 5400000, d1Percent: 94.7,
-                d2: 5900000, d2Percent: 103.5,
-                d3: 5600000, d3Percent: 98.2,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "BTTGEK1",
-                name: "APOTEK ALPRO ESPANA KARAWACI",
-                am: "NUR ADE ARYANI",
-                totalTarget: 63000000,
-                dailyTarget: 6300000,
-                d1: 6000000, d1Percent: 95.2,
-                d2: 6500000, d2Percent: 103.2,
-                d3: 6200000, d3Percent: 98.4,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "BTTGGB1",
-                name: "APOTEK ALPRO GADING BOULEVARD",
-                am: "SANNAULI SIAHAAN",
-                totalTarget: 98000000,
-                dailyTarget: 9800000,
-                d1: 9500000, d1Percent: 96.9,
-                d2: 10100000, d2Percent: 103.1,
-                d3: 9700000, d3Percent: 99.0,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "BTTGIP1",
-                name: "APOTEK ALPRO EXPRESS INPRES",
-                am: "SANNAULI SIAHAAN",
-                totalTarget: 44000000,
-                dailyTarget: 4400000,
-                d1: 4100000, d1Percent: 93.2,
-                d2: 4600000, d2Percent: 104.5,
-                d3: 4300000, d3Percent: 97.7,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "BTTGKD1",
-                name: "APOTEK ALPRO KELAPA DUA",
-                am: "NUR ADE ARYANI",
-                totalTarget: 30000000,
-                dailyTarget: 3000000,
-                d1: 2900000, d1Percent: 96.7,
-                d2: 3100000, d2Percent: 103.3,
-                d3: 2950000, d3Percent: 98.3,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "BTTGKS1",
-                name: "APOTEK ALPRO KREO SELATAN",
-                am: "SANNAULI SIAHAAN",
-                totalTarget: 42000000,
-                dailyTarget: 4200000,
-                d1: 4000000, d1Percent: 95.2,
-                d2: 4300000, d2Percent: 102.4,
-                d3: 4100000, d3Percent: 97.6,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "BTTGLC1",
-                name: "APOTEK ALPRO LEGOSO CIPUTAT",
-                am: "JULAINI",
-                totalTarget: 61000000,
-                dailyTarget: 6100000,
-                d1: 5800000, d1Percent: 95.1,
-                d2: 6300000, d2Percent: 103.3,
-                d3: 6000000, d3Percent: 98.4,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "BTTGMA1",
-                name: "APOTEK ALPRO MODERN ARCADE",
-                am: "NUR ADE ARYANI",
-                totalTarget: 69000000,
-                dailyTarget: 6900000,
-                d1: 6600000, d1Percent: 95.7,
-                d2: 7100000, d2Percent: 102.9,
-                d3: 6800000, d3Percent: 98.6,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "BTTGPB1",
-                name: "APOTEK ALPRO PURI BETA",
-                am: "SANNAULI SIAHAAN",
-                totalTarget: 51000000,
-                dailyTarget: 5100000,
-                d1: 4900000, d1Percent: 96.1,
-                d2: 5200000, d2Percent: 102.0,
-                d3: 5000000, d3Percent: 98.0,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "BTTGPI1",
-                name: "APOTEK ALPRO EXPRESS PORIS INDAH",
-                am: "NUR ADE ARYANI",
-                totalTarget: 35000000,
-                dailyTarget: 3500000,
-                d1: 3300000, d1Percent: 94.3,
-                d2: 3600000, d2Percent: 102.9,
-                d3: 3450000, d3Percent: 98.6,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBSAS1",
-                name: "APOTEK ALPRO EXPRESS AGUS SALIM",
-                am: "JEPPARIA M SIREGAR",
-                totalTarget: 60000000,
-                dailyTarget: 6000000,
-                d1: 5700000, d1Percent: 95.0,
-                d2: 6200000, d2Percent: 103.3,
-                d3: 5900000, d3Percent: 98.3,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBSBB1",
-                name: "APOTEK ALPRO EXPRESS BABAKAN",
-                am: "JEPPARIA M SIREGAR",
-                totalTarget: 47000000,
-                dailyTarget: 4700000,
-                d1: 4500000, d1Percent: 95.7,
-                d2: 4800000, d2Percent: 102.1,
-                d3: 4600000, d3Percent: 97.9,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBSCC1",
-                name: "APOTEK ALPRO CITRAGRAND CIBUBUR",
-                am: "NARTA LENA GINTING",
-                totalTarget: 127000000,
-                dailyTarget: 12700000,
-                d1: 12200000, d1Percent: 96.1,
-                d2: 13000000, d2Percent: 102.4,
-                d3: 12500000, d3Percent: 98.4,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBSCR1",
-                name: "APOTEK ALPRO CAMAN RAYA",
-                am: "JEPPARIA M SIREGAR",
-                totalTarget: 120000000,
-                dailyTarget: 12000000,
-                d1: 11500000, d1Percent: 95.8,
-                d2: 12300000, d2Percent: 102.5,
-                d3: 11800000, d3Percent: 98.3,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBSDB1",
-                name: "APOTEK ALPRO EXPRESS D BOULEVARD BARAT",
-                am: "JEPPARIA M SIREGAR",
-                totalTarget: 62000000,
-                dailyTarget: 6200000,
-                d1: 5900000, d1Percent: 95.2,
-                d2: 6400000, d2Percent: 103.2,
-                d3: 6100000, d3Percent: 98.4,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBSGA1",
-                name: "APOTEK ALPRO EXPRESS GRIYA ASRI 2",
-                am: "ADE IRMA SEPTIANI AIDHA",
-                totalTarget: 30000000,
-                dailyTarget: 3000000,
-                d1: 2850000, d1Percent: 95.0,
-                d2: 3100000, d2Percent: 103.3,
-                d3: 2950000, d3Percent: 98.3,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBSGI1",
-                name: "APOTEK ALPRO GALAXI INDAH",
-                am: "JEPPARIA M SIREGAR",
-                totalTarget: 61000000,
-                dailyTarget: 6100000,
-                d1: 5800000, d1Percent: 95.1,
-                d2: 6300000, d2Percent: 103.3,
-                d3: 6000000, d3Percent: 98.4,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBSGW1",
-                name: "APOTEK ALPRO GRAND WISATA",
-                am: "JEPPARIA M SIREGAR",
-                totalTarget: 67000000,
-                dailyTarget: 6700000,
-                d1: 6400000, d1Percent: 95.5,
-                d2: 6900000, d2Percent: 103.0,
-                d3: 6600000, d3Percent: 98.5,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBSJB1",
-                name: "APOTEK ALPRO JATIBENING",
-                am: "CAMELIA FITRIANI",
-                totalTarget: 46000000,
-                dailyTarget: 4600000,
-                d1: 4400000, d1Percent: 95.7,
-                d2: 4700000, d2Percent: 102.2,
-                d3: 4550000, d3Percent: 98.9,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBSJK1",
-                name: "APOTEK ALPRO EXPRESS JATIKRAMAT",
-                am: "CAMELIA FITRIANI",
-                totalTarget: 40000000,
-                dailyTarget: 4000000,
-                d1: 3800000, d1Percent: 95.0,
-                d2: 4100000, d2Percent: 102.5,
-                d3: 3950000, d3Percent: 98.8,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBSJM1",
-                name: "APOTEK ALPRO JATIMKMUR",
-                am: "CAMELIA FITRIANI",
-                totalTarget: 45000000,
-                dailyTarget: 4500000,
-                d1: 4300000, d1Percent: 95.6,
-                d2: 4600000, d2Percent: 102.2,
-                d3: 4450000, d3Percent: 98.9,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBDBB1",
-                name: "APOTEK ALPRO BUAH BATU",
-                am: "SANTI FARIDA YANTI",
-                totalTarget: 30000000,
-                dailyTarget: 3000000,
-                d1: 2850000, d1Percent: 95.0,
-                d2: 3100000, d2Percent: 103.3,
-                d3: 2950000, d3Percent: 98.3,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBDNI1",
-                name: "APOTEK ALPRO EXPRESS NUSA INDAH",
-                am: "SANTI FARIDA YANTI",
-                totalTarget: 53000000,
-                dailyTarget: 5300000,
-                d1: 5100000, d1Percent: 96.2,
-                d2: 5400000, d2Percent: 101.9,
-                d3: 5250000, d3Percent: 99.1,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBDPT1",
-                name: "APOTEK ALPRO EXPRESS PESANTREN",
-                am: "SANTI FARIDA YANTI",
-                totalTarget: 43000000,
-                dailyTarget: 4300000,
-                d1: 4100000, d1Percent: 95.3,
-                d2: 4400000, d2Percent: 102.3,
-                d3: 4250000, d3Percent: 98.8,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBDPW1",
-                name: "APOTEK ALPRO EXPRESS PANDAN WANGI",
-                am: "SANTI FARIDA YANTI",
-                totalTarget: 46000000,
-                dailyTarget: 4600000,
-                d1: 4400000, d1Percent: 95.7,
-                d2: 4700000, d2Percent: 102.2,
-                d3: 4550000, d3Percent: 98.9,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBDSB1",
-                name: "APOTEK ALPRO STASIUN BANDUNG",
-                am: "SANTI FARIDA YANTI",
-                totalTarget: 30000000,
-                dailyTarget: 3000000,
-                d1: 2850000, d1Percent: 95.0,
-                d2: 3100000, d2Percent: 103.3,
-                d3: 2950000, d3Percent: 98.3,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBGAR1",
-                name: "APOTEK ALPRO EXPRESS ARCO RAYA",
-                am: "APRIANA LUMBAN GAOL",
-                totalTarget: 55000000,
-                dailyTarget: 5500000,
-                d1: 5300000, d1Percent: 96.4,
-                d2: 5600000, d2Percent: 101.8,
-                d3: 5450000, d3Percent: 99.1,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBGBD1",
-                name: "APOTEK ALPRO BUKIT DAGO",
-                am: "SITI NURLAILA",
-                totalTarget: 66000000,
-                dailyTarget: 6600000,
-                d1: 6300000, d1Percent: 95.5,
-                d2: 6800000, d2Percent: 103.0,
-                d3: 6550000, d3Percent: 99.2,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBGBG1",
-                name: "APOTEK ALPRO EXPRESS PURA BOJONG GEDE",
-                am: "APRIANA LUMBAN GAOL",
-                totalTarget: 37000000,
-                dailyTarget: 3700000,
-                d1: 3550000, d1Percent: 95.9,
-                d2: 3750000, d2Percent: 101.4,
-                d3: 3650000, d3Percent: 98.6,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBGCC1",
-                name: "APOTEK ALPRO CIBUBUR CIKEAS",
-                am: "NARTA LENA GINTING",
-                totalTarget: 50000000,
-                dailyTarget: 5000000,
-                d1: 4800000, d1Percent: 96.0,
-                d2: 5100000, d2Percent: 102.0,
-                d3: 4950000, d3Percent: 99.0,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBGCV1",
-                name: "APOTEK ALPRO CIMANGGU VILLA",
-                am: "APRIANA LUMBAN GAOL",
-                totalTarget: 114000000,
-                dailyTarget: 11400000,
-                d1: 10900000, d1Percent: 95.6,
-                d2: 11700000, d2Percent: 102.6,
-                d3: 11300000, d3Percent: 99.1,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBGLW1",
-                name: "APOTEK ALPRO LEGENDA WISATA",
-                am: "NARTA LENA GINTING",
-                totalTarget: 59000000,
-                dailyTarget: 5900000,
-                d1: 5700000, d1Percent: 96.6,
-                d2: 6000000, d2Percent: 101.7,
-                d3: 5850000, d3Percent: 99.2,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBGPS1",
-                name: "APOTEK ALPRO PANGERAN SOGIRI",
-                am: "APRIANA LUMBAN GAOL",
-                totalTarget: 37000000,
-                dailyTarget: 3700000,
-                d1: 3550000, d1Percent: 95.9,
-                d2: 3750000, d2Percent: 101.4,
-                d3: 3650000, d3Percent: 98.6,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "JBBGRC1",
-                name: "APOTEK ALPRO RAYA CIKARET",
-                am: "APRIANA LUMBAN GAOL",
-                totalTarget: 30000000,
-                dailyTarget: 3000000,
-                d1: 2850000, d1Percent: 95.0,
-                d2: 3100000, d2Percent: 103.3,
-                d3: 2950000, d3Percent: 98.3,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "BTTSB21",
-                name: "APOTEK ALPRO BINTARO SEKTOR 2",
-                am: "HANNA DOLI BR KABAN",
-                totalTarget: 79000000,
-                dailyTarget: 7900000,
-                d1: 7600000, d1Percent: 96.2,
-                d2: 8100000, d2Percent: 102.5,
-                d3: 7850000, d3Percent: 99.4,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            },
-            {
-                outlet: "BTTSB91",
-                name: "APOTEK ALPRO BINTARO SEKTOR 9",
-                am: "HANNA DOLI BR KABAN",
-                totalTarget: 78000000,
-                dailyTarget: 7800000,
-                d1: 7500000, d1Percent: 96.2,
-                d2: 8000000, d2Percent: 102.6,
-                d3: 7750000, d3Percent: 99.4,
-                d4: 0, d4Percent: 0, d5: 0, d5Percent: 0, d6: 0, d6Percent: 0, d7: 0, d7Percent: 0, d8: 0, d8Percent: 0, d9: 0, d9Percent: 0, d10: 0, d10Percent: 0
-            }
-        ];
-
+        // Global variables
         let currentUser = null;
         let currentPage = 1;
         const itemsPerPage = 15;
-        let filteredOutlets = [...sampleOutlets];
+        let filteredOutlets = [];
+        let allUsers = [];
+        let allOutlets = [];
         let dailyProgressChart = null;
         let amChart = null;
 
+        // Google Sheets configuration
+        const SHEETS_CONFIG = {
+            LOGIN_SHEET_ID: '1GoUm5WLPFl3uu7NlOVR7RU18EtpgxC3zf9k1ckSzfPs',
+            PERFORMANCE_SHEET_ID: '1TkquW9OszwyWSa-ett8hvGe9JgDdgNtX',
+            LOGIN_RANGE: 'Sheet1!A:H',
+            PERFORMANCE_RANGE: 'Update Daily Performance!A:Z'
+        };
+
+        // Google Sheets API URLs (using public access)
+        function getLoginSheetUrl() {
+            return `https://docs.google.com/spreadsheets/d/${SHEETS_CONFIG.LOGIN_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Sheet1`;
+        }
+
+        function getPerformanceSheetUrl() {
+            return `https://docs.google.com/spreadsheets/d/${SHEETS_CONFIG.PERFORMANCE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Update Daily Performance`;
+        }
+
+        // Utility function to parse CSV
+        function parseCSV(text) {
+            const rows = [];
+            const lines = text.split('\n');
+            for (let line of lines) {
+                if (line.trim()) {
+                    // Simple CSV parsing (handles quoted fields)
+                    const row = [];
+                    let current = '';
+                    let inQuotes = false;
+                    
+                    for (let i = 0; i < line.length; i++) {
+                        const char = line[i];
+                        if (char === '"') {
+                            inQuotes = !inQuotes;
+                        } else if (char === ',' && !inQuotes) {
+                            row.push(current.trim().replace(/^"/, '').replace(/"$/, ''));
+                            current = '';
+                        } else {
+                            current += char;
+                        }
+                    }
+                    row.push(current.trim().replace(/^"/, '').replace(/"$/, ''));
+                    rows.push(row);
+                }
+            }
+            return rows;
+        }
+
+        // Fetch data from Google Sheets
+        async function fetchLoginData() {
+            try {
+                const response = await fetch(getLoginSheetUrl());
+                const text = await response.text();
+                const rows = parseCSV(text);
+                
+                // Skip header row and parse data
+                const users = [];
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (row.length >= 8 && row[1]) { // Check if email exists
+                        users.push({
+                            name: row[0] || '',
+                            email: row[1] || '',
+                            status: row[2] || '',
+                            role: row[3] || '',
+                            password: row[7] || ''
+                        });
+                    }
+                }
+                return users;
+            } catch (error) {
+                console.error('Error fetching login data:', error);
+                return [];
+            }
+        }
+
+        async function fetchPerformanceData() {
+            try {
+                const response = await fetch(getPerformanceSheetUrl());
+                const text = await response.text();
+                const rows = parseCSV(text);
+                
+                // Skip header row and parse data
+                const outlets = [];
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (row.length >= 5 && row[0]) { // Check if outlet code exists
+                        const outlet = {
+                            outlet: row[0] || '',
+                            name: row[1] || '',
+                            am: row[2] || '',
+                            totalTarget: parseFloat(row[3]?.replace(/,/g, '') || '0') || 0,
+                            dailyTarget: parseFloat(row[4]?.replace(/,/g, '') || '0') || 0
+                        };
+                        
+                        // Parse D1-D10 data (assuming columns F, H, J, L, N, P, R, T, V, X for sales)
+                        // and G, I, K, M, O, Q, S, U, W, Y for percentages
+                        for (let day = 1; day <= 10; day++) {
+                            const salesColIndex = 4 + (day * 2); // F=5, H=7, J=9, etc.
+                            const percentColIndex = salesColIndex + 1;
+                            
+                            outlet[`d${day}`] = parseFloat(row[salesColIndex]?.replace(/,/g, '') || '0') || 0;
+                            outlet[`d${day}Percent`] = parseFloat(row[percentColIndex] || '0') || 0;
+                        }
+                        
+                        outlets.push(outlet);
+                    }
+                }
+                return outlets;
+            } catch (error) {
+                console.error('Error fetching performance data:', error);
+                return [];
+            }
+        }
+
         // Login Functions
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const loginBtnText = document.getElementById('loginBtnText');
+            const loginSpinner = document.getElementById('loginSpinner');
             
-            // Find user in sample data (replace with Google Sheets API call)
-            const user = sampleUsers.find(u => u.email === email && u.password === password && u.status === 'Active');
+            // Show loading state
+            loginBtnText.textContent = 'Signing in...';
+            loginSpinner.classList.remove('hidden');
+            loginBtn.disabled = true;
             
-            if (user) {
-                currentUser = user;
-                showDashboard();
-            } else {
-                showLoginError('Invalid email or password');
+            try {
+                // Fetch login data if not already loaded
+                if (allUsers.length === 0) {
+                    allUsers = await fetchLoginData();
+                }
+                
+                // Find user
+                const user = allUsers.find(u => 
+                    u.email.toLowerCase() === email.toLowerCase() && 
+                    u.password === password && 
+                    u.status.toLowerCase() === 'active'
+                );
+                
+                if (user) {
+                    currentUser = user;
+                    showDashboard();
+                } else {
+                    showLoginError('Invalid email or password');
+                }
+            } catch (error) {
+                showLoginError('Error connecting to server. Please try again.');
+                console.error('Login error:', error);
             }
+            
+            // Reset button state
+            loginBtnText.textContent = 'Login';
+            loginSpinner.classList.add('hidden');
+            loginBtn.disabled = false;
         });
 
         function showLoginError(message) {
             const errorDiv = document.getElementById('loginError');
             errorDiv.textContent = message;
             errorDiv.classList.remove('hidden');
+            setTimeout(() => errorDiv.classList.add('hidden'), 5000);
         }
 
-        function showDashboard() {
+        async function showDashboard() {
             document.getElementById('loginPage').classList.add('hidden');
             document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('loadingState').classList.remove('hidden');
+            document.getElementById('dashboardContent').classList.add('hidden');
             
             // Set user info
             document.getElementById('userName').textContent = currentUser.name;
             document.getElementById('userRole').textContent = currentUser.role;
             
             // Initialize dashboard
-            initializeDashboard();
+            await initializeDashboard();
         }
 
         function logout() {
             currentUser = null;
+            allUsers = [];
+            allOutlets = [];
             document.getElementById('dashboard').classList.add('hidden');
             document.getElementById('loginPage').classList.remove('hidden');
             document.getElementById('loginForm').reset();
@@ -884,14 +542,55 @@
         }
 
         // Dashboard Functions
-        function initializeDashboard() {
-            startCountdown();
-            updateNationalProgress();
-            updateMedalLeaderboards();
-            populateFilters();
-            updateOutletDisplay();
-            updateBottomPerformers();
-            initializeCharts();
+        async function initializeDashboard() {
+            try {
+                // Fetch performance data
+                allOutlets = await fetchPerformanceData();
+                filteredOutlets = [...allOutlets];
+                
+                // Hide loading and show content
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('dashboardContent').classList.remove('hidden');
+                
+                // Initialize dashboard components
+                startCountdown();
+                updateNationalProgress();
+                updateMedalLeaderboards();
+                populateFilters();
+                updateOutletDisplay();
+                updateBottomPerformers();
+                initializeCharts();
+                
+                // Set up auto-refresh
+                setInterval(refreshData, 30000); // Refresh every 30 seconds
+                
+            } catch (error) {
+                console.error('Error initializing dashboard:', error);
+                document.getElementById('loadingState').innerHTML = 
+                    '<div class="text-center"><p class="text-red-600">Error loading data. Please refresh the page.</p></div>';
+            }
+        }
+
+        async function refreshData() {
+            const refreshIcon = document.getElementById('refreshIcon');
+            refreshIcon.classList.add('animate-spin');
+            
+            try {
+                // Refresh performance data
+                const newOutlets = await fetchPerformanceData();
+                if (newOutlets.length > 0) {
+                    allOutlets = newOutlets;
+                    applyFilters();
+                    updateNationalProgress();
+                    updateMedalLeaderboards();
+                    updateBottomPerformers();
+                    updateCharts();
+                }
+            } catch (error) {
+                console.error('Error refreshing data:', error);
+            }
+            
+            refreshIcon.classList.remove('animate-spin');
         }
 
         function startCountdown() {
@@ -922,8 +621,10 @@
             let totalAchievement = 0;
             const totalTarget = 12000000000;
             
-            sampleOutlets.forEach(outlet => {
-                totalAchievement += (outlet.d1 || 0) + (outlet.d2 || 0) + (outlet.d3 || 0);
+            allOutlets.forEach(outlet => {
+                for (let day = 1; day <= 10; day++) {
+                    totalAchievement += outlet[`d${day}`] || 0;
+                }
             });
             
             const achievementPercent = (totalAchievement / totalTarget) * 100;
@@ -940,16 +641,29 @@
                 document.getElementById('incentiveStatus').className = 'text-sm mt-2 text-green-600 font-bold';
             } else {
                 document.getElementById('incentiveStatus').textContent = `LOCKED (Need ${(90 - achievementPercent).toFixed(1)}% more)`;
+                document.getElementById('incentiveStatus').className = 'text-sm mt-2 text-red-600';
             }
         }
 
         function updateMedalLeaderboards() {
             // Top 5 Outlets by Achievement %
-            const outletsByPercent = [...sampleOutlets]
-                .map(outlet => ({
-                    ...outlet,
-                    avgPercent: ((outlet.d1Percent || 0) + (outlet.d2Percent || 0) + (outlet.d3Percent || 0)) / 3
-                }))
+            const outletsByPercent = [...allOutlets]
+                .map(outlet => {
+                    let totalPercent = 0;
+                    let activeDays = 0;
+                    
+                    for (let day = 1; day <= 10; day++) {
+                        if (outlet[`d${day}Percent`] > 0) {
+                            totalPercent += outlet[`d${day}Percent`];
+                            activeDays++;
+                        }
+                    }
+                    
+                    return {
+                        ...outlet,
+                        avgPercent: activeDays > 0 ? totalPercent / activeDays : 0
+                    };
+                })
                 .sort((a, b) => b.avgPercent - a.avgPercent)
                 .slice(0, 5);
 
@@ -968,11 +682,14 @@
             }).join('');
 
             // Top 5 Outlets by Sales
-            const outletsBySales = [...sampleOutlets]
-                .map(outlet => ({
-                    ...outlet,
-                    totalSales: (outlet.d1 || 0) + (outlet.d2 || 0) + (outlet.d3 || 0)
-                }))
+            const outletsBySales = [...allOutlets]
+                .map(outlet => {
+                    let totalSales = 0;
+                    for (let day = 1; day <= 10; day++) {
+                        totalSales += outlet[`d${day}`] || 0;
+                    }
+                    return { ...outlet, totalSales };
+                })
                 .sort((a, b) => b.totalSales - a.totalSales)
                 .slice(0, 5);
 
@@ -992,12 +709,18 @@
 
             // Top 3 Area Managers
             const amPerformance = {};
-            sampleOutlets.forEach(outlet => {
+            allOutlets.forEach(outlet => {
                 if (!amPerformance[outlet.am]) {
                     amPerformance[outlet.am] = { totalSales: 0, totalTarget: 0, outlets: 0 };
                 }
-                amPerformance[outlet.am].totalSales += (outlet.d1 || 0) + (outlet.d2 || 0) + (outlet.d3 || 0);
-                amPerformance[outlet.am].totalTarget += outlet.totalTarget;
+                
+                let outletTotalSales = 0;
+                for (let day = 1; day <= 10; day++) {
+                    outletTotalSales += outlet[`d${day}`] || 0;
+                }
+                
+                amPerformance[outlet.am].totalSales += outletTotalSales;
+                amPerformance[outlet.am].totalTarget += outlet.totalTarget || 0;
                 amPerformance[outlet.am].outlets++;
             });
 
@@ -1005,7 +728,7 @@
                 .map(([name, data]) => ({
                     name,
                     ...data,
-                    achievementPercent: (data.totalSales / data.totalTarget) * 100
+                    achievementPercent: data.totalTarget > 0 ? (data.totalSales / data.totalTarget) * 100 : 0
                 }))
                 .sort((a, b) => b.achievementPercent - a.achievementPercent)
                 .slice(0, 3);
@@ -1028,7 +751,7 @@
 
         function populateFilters() {
             const amFilter = document.getElementById('amFilter');
-            const uniqueAMs = [...new Set(sampleOutlets.map(outlet => outlet.am))].sort();
+            const uniqueAMs = [...new Set(allOutlets.map(outlet => outlet.am))].filter(am => am);
             
             amFilter.innerHTML = '<option value="">All Area Managers</option>' +
                 uniqueAMs.map(am => `<option value="${am}">${am}</option>`).join('');
@@ -1042,7 +765,7 @@
             const amFilter = document.getElementById('amFilter').value;
             const searchTerm = document.getElementById('searchOutlet').value.toLowerCase();
 
-            filteredOutlets = sampleOutlets.filter(outlet => {
+            filteredOutlets = allOutlets.filter(outlet => {
                 const amMatch = !amFilter || outlet.am === amFilter;
                 const searchMatch = !searchTerm || 
                     outlet.name.toLowerCase().includes(searchTerm) || 
@@ -1067,8 +790,19 @@
         }
 
         function createOutletCard(outlet) {
-            const totalSales = (outlet.d1 || 0) + (outlet.d2 || 0) + (outlet.d3 || 0);
-            const avgAchievement = totalSales > 0 ? ((outlet.d1Percent || 0) + (outlet.d2Percent || 0) + (outlet.d3Percent || 0)) / 3 : 0;
+            let totalSales = 0;
+            let totalPercent = 0;
+            let activeDays = 0;
+            
+            for (let day = 1; day <= 10; day++) {
+                totalSales += outlet[`d${day}`] || 0;
+                if (outlet[`d${day}Percent`] > 0) {
+                    totalPercent += outlet[`d${day}Percent`];
+                    activeDays++;
+                }
+            }
+            
+            const avgAchievement = activeDays > 0 ? totalPercent / activeDays : 0;
             
             const performanceClass = avgAchievement >= 100 ? 'performance-excellent' : 
                                    avgAchievement >= 90 ? 'performance-good' : 
@@ -1076,12 +810,10 @@
 
             return `
                 <div class="outlet-card ${performanceClass} bg-white rounded-lg shadow-lg p-4">
-                    <div class="flex justify-between items-start mb-3">
-                        <div>
-                            <h4 class="font-bold text-sm text-gray-900">${outlet.name}</h4>
-                            <p class="text-xs text-gray-600">${outlet.outlet}</p>
-                            <p class="text-xs text-gray-600">${outlet.am}</p>
-                        </div>
+                    <div class="mb-3">
+                        <h4 class="font-bold text-sm text-gray-900">${outlet.name}</h4>
+                        <p class="text-xs text-gray-600">${outlet.outlet}</p>
+                        <p class="text-xs text-gray-600">${outlet.am}</p>
                     </div>
                     
                     <div class="grid grid-cols-5 gap-2 mb-4">
@@ -1126,7 +858,7 @@
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Avg Achievement:</span>
                             <span class="font-semibold ${avgAchievement >= 100 ? 'text-green-600' : avgAchievement >= 90 ? 'text-blue-600' : 'text-orange-600'}">
-                                ${avgAchievement.toFixed(1)}%
+                                ${avgAchievement > 0 ? avgAchievement.toFixed(1) + '%' : '-'}
                             </span>
                         </div>
                     </div>
@@ -1156,11 +888,23 @@
 
         function updateBottomPerformers() {
             // Bottom 10 Outlets
-            const outletsByPerformance = [...sampleOutlets]
-                .map(outlet => ({
-                    ...outlet,
-                    avgPercent: ((outlet.d1Percent || 0) + (outlet.d2Percent || 0) + (outlet.d3Percent || 0)) / 3
-                }))
+            const outletsByPerformance = [...allOutlets]
+                .map(outlet => {
+                    let totalPercent = 0;
+                    let activeDays = 0;
+                    
+                    for (let day = 1; day <= 10; day++) {
+                        if (outlet[`d${day}Percent`] > 0) {
+                            totalPercent += outlet[`d${day}Percent`];
+                            activeDays++;
+                        }
+                    }
+                    
+                    return {
+                        ...outlet,
+                        avgPercent: activeDays > 0 ? totalPercent / activeDays : 0
+                    };
+                })
                 .sort((a, b) => a.avgPercent - b.avgPercent)
                 .slice(0, 10);
 
@@ -1172,20 +916,25 @@
                         <p class="text-xs text-gray-600">${outlet.am}</p>
                     </div>
                     <div class="text-right">
-                        <p class="text-sm font-bold text-red-600">${outlet.avgPercent.toFixed(1)}%</p>
+                        <p class="text-sm font-bold text-red-600">${outlet.avgPercent > 0 ? outlet.avgPercent.toFixed(1) + '%' : 'No data'}</p>
                     </div>
                 </div>
             `).join('');
 
             // Bottom 3 AMs
             const amPerformance = {};
-            sampleOutlets.forEach(outlet => {
+            allOutlets.forEach(outlet => {
                 if (!amPerformance[outlet.am]) {
                     amPerformance[outlet.am] = { totalSales: 0, totalTarget: 0, outlets: [] };
                 }
-                const outletTotal = (outlet.d1 || 0) + (outlet.d2 || 0) + (outlet.d3 || 0);
-                amPerformance[outlet.am].totalSales += outletTotal;
-                amPerformance[outlet.am].totalTarget += outlet.totalTarget;
+                
+                let outletTotalSales = 0;
+                for (let day = 1; day <= 10; day++) {
+                    outletTotalSales += outlet[`d${day}`] || 0;
+                }
+                
+                amPerformance[outlet.am].totalSales += outletTotalSales;
+                amPerformance[outlet.am].totalTarget += outlet.totalTarget || 0;
                 amPerformance[outlet.am].outlets.push(outlet.name);
             });
 
@@ -1193,7 +942,7 @@
                 .map(([name, data]) => ({
                     name,
                     ...data,
-                    achievementPercent: (data.totalSales / data.totalTarget) * 100
+                    achievementPercent: data.totalTarget > 0 ? (data.totalSales / data.totalTarget) * 100 : 0
                 }))
                 .sort((a, b) => a.achievementPercent - b.achievementPercent)
                 .slice(0, 3);
@@ -1216,11 +965,11 @@
         function initializeCharts() {
             // Daily Progress Chart
             const dailyCtx = document.getElementById('dailyProgressChart').getContext('2d');
-            const dailyData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; // D1-D10
+            const dailyData = new Array(10).fill(0);
             
             // Calculate daily totals
             for (let day = 1; day <= 10; day++) {
-                sampleOutlets.forEach(outlet => {
+                allOutlets.forEach(outlet => {
                     dailyData[day - 1] += outlet[`d${day}`] || 0;
                 });
             }
@@ -1270,29 +1019,27 @@
 
             // Area Manager Performance Chart
             const amCtx = document.getElementById('amChart').getContext('2d');
-            const amPerformance = {};
             
-            sampleOutlets.forEach(outlet => {
+            // Calculate AM performance data
+            const amPerformance = {};
+            allOutlets.forEach(outlet => {
                 if (!amPerformance[outlet.am]) {
                     amPerformance[outlet.am] = 0;
                 }
-                amPerformance[outlet.am] += (outlet.d1 || 0) + (outlet.d2 || 0) + (outlet.d3 || 0);
+                for (let day = 1; day <= 10; day++) {
+                    amPerformance[outlet.am] += outlet[`d${day}`] || 0;
+                }
             });
 
-            const amNames = Object.keys(amPerformance);
-            const amData = Object.values(amPerformance);
-
             amChart = new Chart(amCtx, {
-                type: 'bar',
+                type: 'doughnut',
                 data: {
-                    labels: amNames.map(name => name.split(' ')[0]), // Shortened names
+                    labels: Object.keys(amPerformance),
                     datasets: [{
-                        label: 'Total Sales',
-                        data: amData,
+                        data: Object.values(amPerformance),
                         backgroundColor: [
-                            '#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6',
-                            '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#84cc16',
-                            '#06b6d4', '#8b5cf6'
+                            '#dc2626', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6',
+                            '#ef4444', '#06b6d4', '#84cc16', '#f97316', '#ec4899'
                         ]
                     }]
                 },
@@ -1301,15 +1048,11 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: 'top'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return 'Rp ' + (value / 1000000).toFixed(0) + 'M';
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                font: {
+                                    size: 10
                                 }
                             }
                         }
@@ -1318,10 +1061,39 @@
             });
         }
 
+        function updateCharts() {
+            if (dailyProgressChart) {
+                // Update daily progress chart
+                const dailyData = new Array(10).fill(0);
+                for (let day = 1; day <= 10; day++) {
+                    allOutlets.forEach(outlet => {
+                        dailyData[day - 1] += outlet[`d${day}`] || 0;
+                    });
+                }
+                dailyProgressChart.data.datasets[0].data = dailyData;
+                dailyProgressChart.update();
+            }
+
+            if (amChart) {
+                // Update AM chart
+                const amPerformance = {};
+                allOutlets.forEach(outlet => {
+                    if (!amPerformance[outlet.am]) {
+                        amPerformance[outlet.am] = 0;
+                    }
+                    for (let day = 1; day <= 10; day++) {
+                        amPerformance[outlet.am] += outlet[`d${day}`] || 0;
+                    }
+                });
+                amChart.data.labels = Object.keys(amPerformance);
+                amChart.data.datasets[0].data = Object.values(amPerformance);
+                amChart.update();
+            }
+        }
+
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if user is already logged in (you can implement session storage here)
-            // For now, always show login page
+            // Always show login page on load
         });
     </script>
 
