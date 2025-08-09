@@ -142,6 +142,61 @@
             background: linear-gradient(135deg, #3b82f6 0%, #1e40af 50%, #1e3a8a 100%);
             box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
         }
+        
+        .am-table {
+            font-size: 0.8rem;
+        }
+        
+        .am-table th {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            font-weight: 600;
+            text-align: center;
+            padding: 8px 4px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .am-table td {
+            padding: 6px 4px;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+        }
+        
+        .am-table .am-name {
+            text-align: left;
+            font-weight: 600;
+            min-width: 120px;
+        }
+        
+        .am-table .target-col {
+            background-color: #fef3c7;
+        }
+        
+        .am-table .achievement-col {
+            font-weight: 700;
+        }
+        
+        .achievement-excellent { background-color: #d1fae5; color: #065f46; }
+        .achievement-good { background-color: #dbeafe; color: #1e40af; }
+        .achievement-average { background-color: #fef3c7; color: #92400e; }
+        .achievement-poor { background-color: #fecaca; color: #991b1b; }
+        
+        .day-sales-cell {
+            min-width: 70px;
+            font-size: 0.7rem;
+        }
+        
+        @media (max-width: 768px) {
+            .am-table {
+                font-size: 0.6rem;
+            }
+            .day-sales-cell {
+                min-width: 50px;
+                font-size: 0.6rem;
+            }
+            .am-table th, .am-table td {
+                padding: 4px 2px;
+            }
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
@@ -298,6 +353,53 @@
                                 <p class="text-sm mt-3 font-semibold" id="incentiveStatus">LOCKED (Need 90%)</p>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Area Manager Performance Table -->
+            <div class="mb-8">
+                <div class="card-enhanced rounded-2xl shadow-xl p-8">
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">
+                            <i class="fas fa-table mr-2 text-blue-600"></i>
+                            Area Manager Performance Table
+                        </h3>
+                        <p class="text-gray-600">Complete 10-day breakdown with targets, daily sales, and achievement percentages</p>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="am-table w-full table-auto border-collapse rounded-lg overflow-hidden shadow-sm">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" class="am-name">Area Manager</th>
+                                    <th rowspan="2" class="target-col">10-Day Target</th>
+                                    <th colspan="10" class="border-b-2 border-gray-300">Daily Sales (D1 - D10)</th>
+                                    <th rowspan="2" class="achievement-col">Total Sales</th>
+                                    <th rowspan="2" class="achievement-col">Achievement %</th>
+                                </tr>
+                                <tr>
+                                    <th class="day-sales-cell">D1</th>
+                                    <th class="day-sales-cell">D2</th>
+                                    <th class="day-sales-cell">D3</th>
+                                    <th class="day-sales-cell">D4</th>
+                                    <th class="day-sales-cell">D5</th>
+                                    <th class="day-sales-cell">D6</th>
+                                    <th class="day-sales-cell">D7</th>
+                                    <th class="day-sales-cell">D8</th>
+                                    <th class="day-sales-cell">D9</th>
+                                    <th class="day-sales-cell">D10</th>
+                                </tr>
+                            </thead>
+                            <tbody id="amTableBody">
+                                <tr>
+                                    <td colspan="14" class="text-center py-8 text-gray-500">
+                                        <i class="fas fa-spinner fa-spin mr-2"></i>
+                                        Loading Area Manager data...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -550,6 +652,18 @@
             return 'Rp ' + amount.toLocaleString('id-ID');
         }
 
+        // Format number for display in table (shorter format)
+        function formatRupiahShort(amount) {
+            if (amount === 0) return '-';
+            
+            if (amount >= 1000000) {
+                return (amount / 1000000).toFixed(1) + 'M';
+            } else if (amount >= 1000) {
+                return (amount / 1000).toFixed(0) + 'K';
+            }
+            return amount.toLocaleString('id-ID');
+        }
+
         // Get current campaign day (Aug 9 = Day 1, Aug 10 = Day 2, etc.)
         function getCurrentCampaignDay() {
             const startDate = new Date('2025-08-09');
@@ -649,25 +763,26 @@
                 const rows = parseCSV(text);
                 
                 const amData = [];
-                // Skip header row and filter out Grand Total
+                // Skip header row
                 for (let i = 1; i < rows.length; i++) {
                     const row = rows[i];
                     if (row.length >= 5 && row[0] && row[0].trim() !== '' && 
-                        !row[0].toLowerCase().includes('grand total') &&
-                        !row[0].toLowerCase().includes('total')) { // FILTER OUT GRAND TOTAL AND TOTAL
+                        !row[0].toLowerCase().includes('grand total')) { // FILTER OUT GRAND TOTAL
                         
                         const am = {
                             name: row[0] || '',
                             totalTarget: parseIndonesianNumber(row[1]), // Column B
                             // D1-D10 sales from columns D, E, F, G, H, I, J, K, L, M
-                            totalSales: 0
+                            totalSales: 0,
+                            dailySales: []
                         };
                         
-                        // Sum all daily sales (columns D through M)
+                        // Sum all daily sales (columns D through M) and store individual daily values
                         for (let day = 1; day <= 10; day++) {
                             const colIndex = 3 + (day - 1); // D=3, E=4, F=5, etc.
                             const dayValue = parseIndonesianNumber(row[colIndex] || '0');
                             am.totalSales += dayValue;
+                            am.dailySales.push(dayValue);
                         }
                         
                         am.achievementPercent = am.totalTarget > 0 ? (am.totalSales / am.totalTarget) * 100 : 0;
@@ -675,12 +790,70 @@
                     }
                 }
                 
-                console.log('Loaded AM data (excluding Grand Total):', amData.length);
-                console.log('First AM sample:', amData[0]);
+                console.log('Loaded AM data:', amData.length);
                 return amData;
             } catch (error) {
                 console.error('Error fetching AM data:', error);
                 return [];
+            }
+        }
+
+        // Update AM Performance Table
+        async function updateAMTable() {
+            try {
+                const amData = await fetchPivotAMData();
+                const sortedAMData = amData.sort((a, b) => b.achievementPercent - a.achievementPercent);
+                
+                const tableBody = document.getElementById('amTableBody');
+                
+                if (sortedAMData.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="14" class="text-center py-8 text-gray-500">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                No Area Manager data available
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                tableBody.innerHTML = sortedAMData.map(am => {
+                    // Determine achievement class
+                    let achievementClass = 'achievement-poor';
+                    if (am.achievementPercent >= 100) {
+                        achievementClass = 'achievement-excellent';
+                    } else if (am.achievementPercent >= 90) {
+                        achievementClass = 'achievement-good';
+                    } else if (am.achievementPercent >= 70) {
+                        achievementClass = 'achievement-average';
+                    }
+                    
+                    return `
+                        <tr class="hover:bg-gray-50">
+                            <td class="am-name">${am.name}</td>
+                            <td class="target-col">${formatRupiahShort(am.totalTarget)}</td>
+                            ${am.dailySales.map((sale, index) => `
+                                <td class="day-sales-cell ${sale > 0 ? 'font-semibold text-blue-700' : 'text-gray-400'}">
+                                    ${formatRupiahShort(sale)}
+                                </td>
+                            `).join('')}
+                            <td class="achievement-col font-bold text-green-700">${formatRupiahShort(am.totalSales)}</td>
+                            <td class="achievement-col ${achievementClass}">${am.achievementPercent.toFixed(1)}%</td>
+                        </tr>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                console.error('Error updating AM table:', error);
+                document.getElementById('amTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="14" class="text-center py-8 text-red-500">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            Error loading Area Manager data
+                        </td>
+                    </tr>
+                `;
             }
         }
 
@@ -803,6 +976,7 @@
                 startCountdown();
                 updateDailyProgress();
                 updateNationalProgress();
+                updateAMTable(); // Add AM Table update
                 updateMedalLeaderboards();
                 populateFilters();
                 updateOutletDisplay();
@@ -829,6 +1003,7 @@
                     applyFilters();
                     updateDailyProgress();
                     updateNationalProgress();
+                    updateAMTable(); // Refresh AM Table
                     updateMedalLeaderboards();
                     updateBottomPerformers();
                     updateCharts();
@@ -943,7 +1118,7 @@
                 `;
             }).join('');
 
-            // Top 3 Area Managers (from Pivot Target AM sheet - excluding Grand Total)
+            // Top 3 Area Managers (from Pivot Target AM sheet)
             try {
                 const amData = await fetchPivotAMData();
                 const topAMs = amData
@@ -1125,7 +1300,7 @@
                 </div>
             `).join('');
 
-            // Bottom 3 AMs (from Pivot data - excluding Grand Total)
+            // Bottom 3 AMs (from Pivot data)
             fetchPivotAMData().then(amData => {
                 const bottomAMs = amData
                     .sort((a, b) => a.achievementPercent - b.achievementPercent)
@@ -1206,9 +1381,7 @@
             const amCtx = document.getElementById('amChart').getContext('2d');
             
             fetchPivotAMData().then(amData => {
-                // Data is already filtered to exclude Grand Total in fetchPivotAMData function
-                console.log('Initializing AM Chart with filtered data:', amData.length, 'items');
-                
+                // Filter out Grand Total (already done in fetchPivotAMData function)
                 amChart = new Chart(amCtx, {
                     type: 'doughnut',
                     data: {
@@ -1255,9 +1428,7 @@
 
             if (amChart) {
                 fetchPivotAMData().then(amData => {
-                    // Data is already filtered to exclude Grand Total in fetchPivotAMData function
-                    console.log('Updating AM Chart with filtered data:', amData.length, 'items');
-                    
+                    // Filter out Grand Total (already done in fetchPivotAMData function)
                     amChart.data.labels = amData.map(am => am.name);
                     amChart.data.datasets[0].data = amData.map(am => am.totalSales);
                     amChart.update();
