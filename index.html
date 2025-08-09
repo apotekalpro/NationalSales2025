@@ -21,25 +21,37 @@
         
         .medal-card {
             transform-style: preserve-3d;
-            transition: transform 0.3s;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
         
         .medal-card:hover {
-            transform: rotateY(5deg) scale(1.05);
+            transform: rotateY(5deg) scale(1.05) translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
         }
         
-        .gold { background: linear-gradient(45deg, #ffd700, #ffed4a); }
-        .silver { background: linear-gradient(45deg, #c0c0c0, #e2e8f0); }
-        .bronze { background: linear-gradient(45deg, #cd7f32, #d69e2e); }
+        .gold { 
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4a 50%, #f59e0b 100%);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+        }
+        .silver { 
+            background: linear-gradient(135deg, #c0c0c0 0%, #e2e8f0 50%, #94a3b8 100%);
+            box-shadow: 0 8px 25px rgba(192, 192, 192, 0.3);
+        }
+        .bronze { 
+            background: linear-gradient(135deg, #cd7f32 0%, #d69e2e 50%, #92400e 100%);
+            box-shadow: 0 8px 25px rgba(205, 127, 50, 0.3);
+        }
         
         .outlet-card {
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
             border-left: 4px solid transparent;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         }
         
         .outlet-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
         }
         
         .progress-ring {
@@ -48,6 +60,15 @@
         
         .animate-pulse-slow {
             animation: pulse 3s infinite;
+        }
+        
+        .glow {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 20px rgba(220, 38, 38, 0.3); }
+            to { box-shadow: 0 0 30px rgba(220, 38, 38, 0.6); }
         }
         
         @keyframes countUp {
@@ -62,12 +83,29 @@
         .day-badge {
             min-width: 80px;
             min-height: 60px;
+            transition: all 0.3s ease;
         }
         
-        .performance-excellent { border-left-color: #10b981; }
-        .performance-good { border-left-color: #3b82f6; }
-        .performance-average { border-left-color: #f59e0b; }
-        .performance-poor { border-left-color: #ef4444; }
+        .day-badge:hover {
+            transform: scale(1.1);
+        }
+        
+        .performance-excellent { 
+            border-left-color: #10b981;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.1);
+        }
+        .performance-good { 
+            border-left-color: #3b82f6;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.1);
+        }
+        .performance-average { 
+            border-left-color: #f59e0b;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.1);
+        }
+        .performance-poor { 
+            border-left-color: #ef4444;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.1);
+        }
         
         .loading-spinner {
             border: 4px solid #f3f4f6;
@@ -82,70 +120,98 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        .card-enhanced {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid rgba(0,0,0,0.05);
+            backdrop-filter: blur(10px);
+        }
+        
+        .progress-bar-animated {
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8, #3b82f6);
+            background-size: 200% 100%;
+            animation: progressFlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes progressFlow {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .daily-tracker {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 50%, #1e3a8a 100%);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
 
     <!-- Login Page -->
     <div id="loginPage" class="min-h-screen gradient-bg flex items-center justify-center">
-        <div class="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
             <div class="text-center mb-8">
-                <i class="fas fa-clinic-medical text-4xl text-red-600 mb-4"></i>
+                <div class="bg-red-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-clinic-medical text-4xl text-red-600"></i>
+                </div>
                 <h1 class="text-3xl font-bold text-gray-900">Apotek Alpro</h1>
-                <p class="text-gray-600">National Day 2025 Dashboard</p>
-                <p class="text-sm text-gray-500 mt-2">9-18 Agustus 2025</p>
+                <p class="text-gray-600 font-medium">National Day 2025 Dashboard</p>
+                <p class="text-sm text-gray-500 mt-2 font-semibold">9-18 Agustus 2025</p>
             </div>
             
             <form id="loginForm" class="space-y-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
                     <input type="email" id="loginEmail" required
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
                            placeholder="your.email@apotekalpro.id">
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
                     <input type="password" id="loginPassword" required
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
                            placeholder="Enter your password">
                 </div>
                 
                 <button type="submit" id="loginBtn"
-                        class="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition duration-200 font-semibold">
+                        class="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-3 rounded-xl hover:from-red-700 hover:to-red-800 transition duration-300 font-semibold shadow-lg">
                     <i class="fas fa-sign-in-alt mr-2"></i>
                     <span id="loginBtnText">Login</span>
                     <div id="loginSpinner" class="loading-spinner mx-auto hidden" style="width: 20px; height: 20px;"></div>
                 </button>
             </form>
             
-            <div id="loginError" class="mt-4 text-red-600 text-sm text-center hidden"></div>
+            <div id="loginError" class="mt-4 text-red-600 text-sm text-center hidden bg-red-50 p-3 rounded-lg"></div>
         </div>
     </div>
 
     <!-- Main Dashboard -->
     <div id="dashboard" class="hidden">
         <!-- Header -->
-        <header class="bg-white shadow-sm border-b border-gray-200">
-            <div class="container mx-auto px-4 py-4">
+        <header class="bg-white shadow-lg border-b border-gray-200">
+            <div class="container mx-auto px-4 py-6">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center space-x-4">
-                        <i class="fas fa-clinic-medical text-2xl text-red-600"></i>
+                        <div class="bg-red-100 rounded-full w-12 h-12 flex items-center justify-center">
+                            <i class="fas fa-clinic-medical text-2xl text-red-600"></i>
+                        </div>
                         <div>
-                            <h1 class="text-2xl font-bold text-gray-900">Apotek Alpro National Day 2025</h1>
-                            <p class="text-gray-600 text-sm">9-18 Agustus 2025</p>
+                            <h1 class="text-3xl font-bold bg-gradient-to-r from-red-600 to-red-800 bg-clip-text text-transparent">
+                                Apotek Alpro National Day 2025
+                            </h1>
+                            <p class="text-gray-600 text-sm font-medium">9-18 Agustus 2025 • Live Dashboard</p>
                         </div>
                     </div>
-                    <div class="flex items-center space-x-4">
-                        <button onclick="refreshData()" class="text-blue-600 hover:text-blue-800" title="Refresh Data">
+                    <div class="flex items-center space-x-6">
+                        <button onclick="refreshData()" class="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-50 transition-all duration-200" title="Refresh Data">
                             <i class="fas fa-sync-alt text-xl" id="refreshIcon"></i>
                         </button>
                         <div class="text-right">
-                            <p class="text-sm text-gray-600">Welcome,</p>
-                            <p class="font-semibold text-gray-900" id="userName"></p>
-                            <p class="text-xs text-gray-500" id="userRole"></p>
+                            <p class="text-sm text-gray-600">Welcome back,</p>
+                            <p class="font-bold text-gray-900" id="userName"></p>
+                            <p class="text-xs text-blue-600 font-medium" id="userRole"></p>
                         </div>
-                        <button onclick="logout()" class="text-red-600 hover:text-red-800">
+                        <button onclick="logout()" class="text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50 transition-all duration-200">
                             <i class="fas fa-sign-out-alt text-xl"></i>
                         </button>
                     </div>
@@ -157,47 +223,79 @@
         <div id="loadingState" class="container mx-auto px-4 py-8">
             <div class="text-center">
                 <div class="loading-spinner mx-auto mb-4"></div>
-                <p class="text-gray-600">Loading dashboard data...</p>
+                <p class="text-gray-600 font-medium">Loading dashboard data...</p>
             </div>
         </div>
 
         <!-- Dashboard Content -->
         <div id="dashboardContent" class="container mx-auto px-4 py-8 hidden">
+            <!-- Daily Progress Tracker -->
+            <div class="mb-8">
+                <div class="daily-tracker text-white rounded-2xl shadow-2xl p-8">
+                    <div class="text-center mb-6">
+                        <i class="fas fa-calendar-day text-3xl mb-3"></i>
+                        <h2 class="text-2xl font-bold">Daily Progress Tracker</h2>
+                        <p class="text-blue-100">Today's Performance vs Daily Target</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2" id="currentDayLabel">Day 1 (Aug 9)</h3>
+                            <p class="text-3xl font-bold" id="dailyAchievement">Rp 0</p>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2">Daily Target</h3>
+                            <p class="text-3xl font-bold">Rp 1.200.000.000</p>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2">Achievement</h3>
+                            <p class="text-3xl font-bold" id="dailyPercent">0.0%</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <div class="w-full bg-blue-800 rounded-full h-4">
+                            <div id="dailyProgress" class="progress-bar-animated h-4 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- National Progress Section -->
             <div class="mb-8">
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <div class="card-enhanced rounded-2xl shadow-2xl p-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
                         <!-- Countdown -->
                         <div class="text-center">
-                            <div class="bg-red-600 text-white rounded-lg p-4">
-                                <i class="fas fa-clock text-2xl mb-2"></i>
-                                <h3 class="font-bold text-lg">Countdown</h3>
-                                <div id="countdown" class="text-2xl font-bold"></div>
+                            <div class="bg-gradient-to-br from-red-600 to-red-700 text-white rounded-xl p-6 glow">
+                                <i class="fas fa-clock text-3xl mb-3"></i>
+                                <h3 class="font-bold text-lg mb-2">Countdown</h3>
+                                <div id="countdown" class="text-2xl font-bold count-up"></div>
                             </div>
                         </div>
                         
                         <!-- National Target -->
                         <div class="text-center">
-                            <h4 class="text-lg font-semibold mb-2">Total Target (10 Days)</h4>
-                            <p class="text-2xl font-bold text-red-600">Rp 12.000.000.000</p>
-                            <p class="text-sm text-gray-600">Daily: Rp 1.200.000.000</p>
+                            <h4 class="text-lg font-semibold mb-3 text-gray-700">Total Target (10 Days)</h4>
+                            <p class="text-3xl font-bold text-red-600 mb-2">Rp 12.000.000.000</p>
+                            <p class="text-sm text-gray-600 bg-gray-100 rounded-lg px-3 py-1 inline-block">Daily: Rp 1.200.000.000</p>
                         </div>
                         
                         <!-- Current Achievement -->
                         <div class="text-center">
-                            <h4 class="text-lg font-semibold mb-2">Current Achievement</h4>
-                            <p class="text-2xl font-bold text-green-600" id="currentAchievement">Rp 0</p>
-                            <p class="text-sm text-gray-600" id="achievementPercent">0.0%</p>
+                            <h4 class="text-lg font-semibold mb-3 text-gray-700">Current Achievement</h4>
+                            <p class="text-3xl font-bold text-green-600 count-up" id="currentAchievement">Rp 0</p>
+                            <p class="text-sm text-gray-600 font-medium" id="achievementPercent">0.0%</p>
                         </div>
                         
                         <!-- Incentive Status -->
                         <div class="text-center">
-                            <h4 class="text-lg font-semibold mb-2">Incentive Status</h4>
+                            <h4 class="text-lg font-semibold mb-3 text-gray-700">Incentive Status</h4>
                             <div class="relative">
-                                <div class="w-full bg-gray-200 rounded-full h-4">
-                                    <div id="incentiveProgress" class="bg-blue-600 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+                                <div class="w-full bg-gray-200 rounded-full h-6 shadow-inner">
+                                    <div id="incentiveProgress" class="progress-bar-animated h-6 rounded-full transition-all duration-1000" style="width: 0%"></div>
                                 </div>
-                                <p class="text-sm mt-2" id="incentiveStatus">LOCKED (Need 90%)</p>
+                                <p class="text-sm mt-3 font-semibold" id="incentiveStatus">LOCKED (Need 90%)</p>
                             </div>
                         </div>
                     </div>
@@ -206,24 +304,26 @@
 
             <!-- Medal Leaderboards -->
             <div class="mb-8">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">🏆 Medal Leaderboards</h2>
+                <h2 class="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-red-600 to-red-800 bg-clip-text text-transparent">
+                    🏆 Medal Leaderboards
+                </h2>
                 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <!-- Top 5 Outlets by Achievement % -->
-                    <div class="bg-white rounded-lg shadow-lg p-6">
-                        <h3 class="text-xl font-bold text-center mb-4">Top 5 Outlets by Achievement %</h3>
+                    <div class="card-enhanced rounded-2xl shadow-xl p-8">
+                        <h3 class="text-xl font-bold text-center mb-6 text-gray-800">Top 5 Outlets by Achievement %</h3>
                         <div id="topOutletsByPercent" class="space-y-4"></div>
                     </div>
                     
                     <!-- Top 5 Outlets by Sales -->
-                    <div class="bg-white rounded-lg shadow-lg p-6">
-                        <h3 class="text-xl font-bold text-center mb-4">Top 5 Outlets by Sales</h3>
+                    <div class="card-enhanced rounded-2xl shadow-xl p-8">
+                        <h3 class="text-xl font-bold text-center mb-6 text-gray-800">Top 5 Outlets by Sales</h3>
                         <div id="topOutletsBySales" class="space-y-4"></div>
                     </div>
                     
                     <!-- Top 3 Area Managers -->
-                    <div class="bg-white rounded-lg shadow-lg p-6">
-                        <h3 class="text-xl font-bold text-center mb-4">Top 3 Area Managers</h3>
+                    <div class="card-enhanced rounded-2xl shadow-xl p-8">
+                        <h3 class="text-xl font-bold text-center mb-6 text-gray-800">Top 3 Area Managers</h3>
                         <div id="topAreaManagers" class="space-y-4"></div>
                     </div>
                 </div>
@@ -231,28 +331,28 @@
 
             <!-- Incentive System -->
             <div class="mb-8">
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-xl font-bold text-center mb-4">💰 Incentive System</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                            <h4 class="font-bold text-green-800 mb-2">Level 1 (≥100%)</h4>
-                            <ul class="text-sm text-green-700">
-                                <li>• Outlet: 2% dari sales</li>
-                                <li>• AM: 0.2% dari total sales area</li>
+                <div class="card-enhanced rounded-2xl shadow-xl p-8">
+                    <h3 class="text-2xl font-bold text-center mb-6 text-gray-800">💰 Incentive System</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded-xl p-6">
+                            <h4 class="font-bold text-green-800 mb-3 text-lg">Level 1 (≥100%)</h4>
+                            <ul class="text-sm text-green-700 space-y-2">
+                                <li class="flex items-center"><i class="fas fa-check-circle mr-2"></i>Outlet: 2% dari sales</li>
+                                <li class="flex items-center"><i class="fas fa-check-circle mr-2"></i>AM: 0.2% dari total sales area</li>
                             </ul>
                         </div>
-                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                            <h4 class="font-bold text-blue-800 mb-2">Level 2 (90-99.99%)</h4>
-                            <ul class="text-sm text-blue-700">
-                                <li>• Outlet: 1% dari sales</li>
-                                <li>• AM: 0.1% dari total sales area</li>
+                        <div class="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-xl p-6">
+                            <h4 class="font-bold text-blue-800 mb-3 text-lg">Level 2 (90-99.99%)</h4>
+                            <ul class="text-sm text-blue-700 space-y-2">
+                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>Outlet: 1% dari sales</li>
+                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>AM: 0.1% dari total sales area</li>
                             </ul>
                         </div>
                     </div>
-                    <div class="text-center mt-4">
-                        <p class="text-sm text-gray-600">
-                            <i class="fas fa-exclamation-triangle text-orange-500"></i>
-                            Syarat: Target nasional minimal 90% untuk unlock incentive
+                    <div class="text-center mt-6">
+                        <p class="text-sm text-gray-600 bg-orange-50 border border-orange-200 rounded-lg p-3">
+                            <i class="fas fa-exclamation-triangle text-orange-500 mr-2"></i>
+                            <strong>Syarat:</strong> Target nasional minimal 90% untuk unlock incentive
                         </p>
                     </div>
                 </div>
@@ -260,32 +360,32 @@
 
             <!-- Outlet Performance Section -->
             <div class="mb-8">
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4 md:mb-0">Outlet Performance Tracker</h3>
+                <div class="card-enhanced rounded-2xl shadow-xl p-8">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4 md:mb-0">Outlet Performance Tracker</h3>
                         
                         <div class="flex flex-col md:flex-row gap-4">
-                            <select id="amFilter" class="px-4 py-2 border rounded-lg">
+                            <select id="amFilter" class="px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent">
                                 <option value="">All Area Managers</option>
                             </select>
                             
                             <input type="text" id="searchOutlet" placeholder="Search outlet..." 
-                                   class="px-4 py-2 border rounded-lg">
+                                   class="px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent">
                         </div>
                     </div>
                     
-                    <div id="outletGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6"></div>
+                    <div id="outletGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"></div>
                     
                     <!-- Pagination -->
                     <div class="flex justify-center items-center space-x-4">
                         <button id="prevPage" onclick="changePage(-1)" 
-                                class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 disabled:opacity-50">
-                            Previous
+                                class="px-6 py-2 bg-gray-300 rounded-xl hover:bg-gray-400 disabled:opacity-50 transition-all duration-200">
+                            <i class="fas fa-chevron-left mr-2"></i>Previous
                         </button>
-                        <span id="pageInfo" class="text-gray-600"></span>
+                        <span id="pageInfo" class="text-gray-600 font-medium"></span>
                         <button id="nextPage" onclick="changePage(1)" 
-                                class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 disabled:opacity-50">
-                            Next
+                                class="px-6 py-2 bg-gray-300 rounded-xl hover:bg-gray-400 disabled:opacity-50 transition-all duration-200">
+                            Next<i class="fas fa-chevron-right ml-2"></i>
                         </button>
                     </div>
                 </div>
@@ -295,26 +395,26 @@
             <div class="mb-8">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <!-- Bottom 10 Outlets -->
-                    <div class="bg-red-50 border border-red-200 rounded-lg p-6">
-                        <h3 class="text-xl font-bold text-red-800 mb-4">
-                            <i class="fas fa-exclamation-triangle"></i>
+                    <div class="bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-200 rounded-2xl p-8 shadow-xl">
+                        <h3 class="text-xl font-bold text-red-800 mb-6">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
                             Bottom 10 Outlets - Need Improvement
                         </h3>
                         <div id="bottomOutlets" class="space-y-3"></div>
-                        <div class="mt-4 text-sm text-red-700">
-                            <p><i class="fas fa-lightbulb"></i> Focus on daily target achievement and customer engagement!</p>
+                        <div class="mt-6 text-sm text-red-700 bg-red-200 rounded-lg p-3">
+                            <p><i class="fas fa-lightbulb mr-2"></i> Focus on daily target achievement and customer engagement!</p>
                         </div>
                     </div>
                     
                     <!-- Bottom 3 Area Managers -->
-                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-6">
-                        <h3 class="text-xl font-bold text-orange-800 mb-4">
-                            <i class="fas fa-chart-line"></i>
+                    <div class="bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-200 rounded-2xl p-8 shadow-xl">
+                        <h3 class="text-xl font-bold text-orange-800 mb-6">
+                            <i class="fas fa-chart-line mr-2"></i>
                             Bottom 3 Area Managers - Strategic Focus
                         </h3>
                         <div id="bottomAMs" class="space-y-3"></div>
-                        <div class="mt-4 text-sm text-orange-700">
-                            <p><i class="fas fa-users"></i> Review regional strategy and support outlet teams!</p>
+                        <div class="mt-6 text-sm text-orange-700 bg-orange-200 rounded-lg p-3">
+                            <p><i class="fas fa-users mr-2"></i> Review regional strategy and support outlet teams!</p>
                         </div>
                     </div>
                 </div>
@@ -323,15 +423,15 @@
             <!-- Charts Section -->
             <div class="mb-8">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="bg-white rounded-lg shadow-lg p-6">
-                        <h3 class="text-xl font-bold mb-4">Daily National Progress</h3>
+                    <div class="card-enhanced rounded-2xl shadow-xl p-8">
+                        <h3 class="text-xl font-bold mb-6 text-gray-800">Daily National Progress</h3>
                         <div style="height: 300px;">
                             <canvas id="dailyProgressChart"></canvas>
                         </div>
                     </div>
                     
-                    <div class="bg-white rounded-lg shadow-lg p-6">
-                        <h3 class="text-xl font-bold mb-4">Area Manager Performance</h3>
+                    <div class="card-enhanced rounded-2xl shadow-xl p-8">
+                        <h3 class="text-xl font-bold mb-6 text-gray-800">Area Manager Performance</h3>
                         <div style="height: 300px;">
                             <canvas id="amChart"></canvas>
                         </div>
@@ -349,12 +449,10 @@
         let filteredOutlets = [];
         let allUsers = [];
         let allOutlets = [];
-        let allAMs = [];
-        let grandTotalData = null;
         let dailyProgressChart = null;
         let amChart = null;
 
-        // Embedded login data
+        // Embedded login data from your Google Sheets (EXACT credentials)
         const EMBEDDED_USERS = [
             { name: "ENI KHUZAIMAH", email: "eni.khuzaimah@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
             { name: "ADE IRMA SEPTIANI AIDHA", email: "ade.irma@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
@@ -386,18 +484,19 @@
             { name: "DEVI", email: "devi.purba@apotekalpro.id", status: "Active", role: "STRATEGY", password: "Alpro@123" }
         ];
 
-        // Google Sheets configuration
+        // Google Sheets configuration for performance data
         const PERFORMANCE_SHEET_ID = '1TkquW9OszwyWSa-ett8hvGe9JgDdgNtX';
+        const PIVOT_AM_SHEET_ID = '1TkquW9OszwyWSa-ett8hvGe9JgDdgNtX';
 
         function getPerformanceSheetUrl() {
             return `https://docs.google.com/spreadsheets/d/${PERFORMANCE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Update Daily Performance`;
         }
 
-        function getAMPivotSheetUrl() {
-            return `https://docs.google.com/spreadsheets/d/${PERFORMANCE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Pivot Target AM`;
+        function getPivotAMSheetUrl() {
+            return `https://docs.google.com/spreadsheets/d/${PIVOT_AM_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Pivot Target AM`;
         }
 
-        // Parse CSV utility
+        // Utility function to parse CSV
         function parseCSV(text) {
             const rows = [];
             const lines = text.split('\n');
@@ -425,93 +524,112 @@
             return rows;
         }
 
-        // Parse Indonesian number format (. = thousands, , = decimal)
+        // Parse Indonesian number format: 1.234.567,89 → 1234567.89
         function parseIndonesianNumber(value) {
             if (!value || value === '' || value === '-') return 0;
             
-            // Clean the value - remove quotes and spaces
-            let cleanValue = String(value).replace(/['"]/g, '').trim();
+            const cleanValue = String(value)
+                .replace(/['"]/g, '')
+                .replace(/\s/g, '')
+                .trim();
             
-            // If it contains both . and , then . is thousands separator
-            if (cleanValue.includes('.') && cleanValue.includes(',')) {
-                // Format like 1.234.567,89
-                cleanValue = cleanValue.replace(/\./g, '').replace(',', '.');
-            } else if (cleanValue.includes('.')) {
-                // Could be thousands (1.234.567) or decimal (1.23)
-                // Count dots - if more than 1, it's thousands separator
-                const dotCount = (cleanValue.match(/\./g) || []).length;
-                if (dotCount > 1 || cleanValue.length > 6) {
-                    // Thousands separator: 1.234.567 or 1.234
-                    cleanValue = cleanValue.replace(/\./g, '');
-                }
-                // Otherwise it's decimal (1.23) - keep as is
-            }
+            // Handle Indonesian format: 1.234.567,89 → 1234567.89
+            const standardValue = cleanValue
+                .replace(/\./g, '')  // Remove thousand separators (periods)
+                .replace(',', '.');  // Convert decimal comma to dot
             
-            const numValue = parseFloat(cleanValue);
+            const numValue = parseFloat(standardValue);
             return isNaN(numValue) ? 0 : numValue;
         }
 
-        // Format number for Indonesian display
-        function formatIndonesianRupiah(amount) {
+        // Format number for display in Indonesian format
+        function formatRupiah(amount) {
             if (amount === 0) return 'Rp 0';
             
-            // Format with periods as thousands separators
-            return 'Rp ' + Math.round(amount).toLocaleString('de-DE');
+            // Convert to Indonesian format: periods for thousands, commas for decimals
+            return 'Rp ' + amount.toLocaleString('id-ID');
+        }
+
+        // Get current campaign day (Aug 9 = Day 1, Aug 10 = Day 2, etc.)
+        function getCurrentCampaignDay() {
+            const startDate = new Date('2025-08-09');
+            const currentDate = new Date();
+            
+            const diffTime = currentDate - startDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            
+            return Math.max(1, Math.min(10, diffDays)); // Clamp between 1-10
         }
 
         async function fetchPerformanceData() {
             try {
-                console.log('Fetching performance data...');
+                console.log('Fetching performance data from:', getPerformanceSheetUrl());
+                
                 const response = await fetch(getPerformanceSheetUrl());
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
                 const text = await response.text();
+                console.log('Raw CSV response (first 500 chars):', text.substring(0, 500));
+                
                 const rows = parseCSV(text);
+                console.log('Total rows parsed:', rows.length);
                 
                 const outlets = [];
                 let grandTotalRow = null;
                 
-                // Find Grand Total row and parse outlet data
-                for (let i = 1; i < rows.length; i++) {
+                // Find row 202 specifically (index 201)
+                if (rows.length > 201) {
+                    grandTotalRow = rows[201]; // Row 202 (0-based index)
+                    console.log('Grand Total row (202) found:', grandTotalRow);
+                } else {
+                    console.warn('Row 202 not found, sheet has only', rows.length, 'rows');
+                    // Fallback to last row
+                    grandTotalRow = rows[rows.length - 1];
+                }
+                
+                // Parse outlet data (skip header row and Grand Total row)
+                for (let i = 1; i < rows.length - 1; i++) {
                     const row = rows[i];
-                    if (row.length >= 6 && row[0]) {
-                        // Check if this is Grand Total row
-                        if (row[0].toLowerCase().includes('grand total')) {
-                            grandTotalRow = row;
-                            console.log('Found Grand Total row:', grandTotalRow);
-                            continue;
+                    if (row.length >= 6 && row[0] && row[0].trim() !== '' && !row[0].toLowerCase().includes('total')) {
+                        const outlet = {
+                            outlet: row[0] || '',
+                            name: row[1] || '',
+                            am: row[2] || '',
+                            totalTarget: parseIndonesianNumber(row[3]), // Column D
+                            dailyTarget: parseIndonesianNumber(row[4])  // Column E
+                        };
+                        
+                        // Parse D1-D10 data - F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y
+                        for (let day = 1; day <= 10; day++) {
+                            const salesColIndex = 4 + (day * 2); // F=6, H=8, J=10, etc. (1-based becomes F=5, H=7, J=9 in 0-based)
+                            const percentColIndex = salesColIndex + 1;
+                            
+                            // Correct mapping: D1=F(5), D2=H(7), D3=J(9), etc.
+                            const actualSalesIndex = 5 + ((day - 1) * 2); // F=5, H=7, J=9, L=11, etc.
+                            const actualPercentIndex = actualSalesIndex + 1; // G=6, I=8, K=10, M=12, etc.
+                            
+                            outlet[`d${day}`] = parseIndonesianNumber(row[actualSalesIndex] || '0');
+                            outlet[`d${day}Percent`] = parseIndonesianNumber(row[actualPercentIndex] || '0');
+                            
+                            console.log(`Outlet ${outlet.outlet} Day ${day}: Sales=${outlet[`d${day}`]} (from col ${actualSalesIndex}), Percent=${outlet[`d${day}Percent`]} (from col ${actualPercentIndex})`);
                         }
                         
-                        if (row[0].trim() !== '') {
-                            const outlet = {
-                                outlet: row[0] || '',
-                                name: row[1] || '',
-                                am: row[2] || '',
-                                totalTarget: parseIndonesianNumber(row[3]), // D = Total target 10 days
-                                dailyTarget: parseIndonesianNumber(row[4])  // E = Daily target
-                            };
-                            
-                            // Parse daily sales and percentages
-                            // F=D1 sales, G=D1%, H=D2 sales, I=D2%, etc.
-                            for (let day = 1; day <= 10; day++) {
-                                const salesColIndex = 4 + (day * 2) - 1; // F=5, H=7, J=9, etc.
-                                const percentColIndex = salesColIndex + 1;  // G=6, I=8, K=10, etc.
-                                
-                                outlet[`d${day}Sales`] = parseIndonesianNumber(row[salesColIndex]);
-                                outlet[`d${day}Percent`] = parseIndonesianNumber(row[percentColIndex]);
-                            }
-                            
-                            outlets.push(outlet);
-                        }
+                        outlets.push(outlet);
                     }
                 }
                 
-                // Store Grand Total data globally
-                grandTotalData = grandTotalRow;
+                // Store Grand Total row for Current Achievement calculation
+                if (grandTotalRow) {
+                    outlets.grandTotalRow = grandTotalRow;
+                }
                 
                 console.log(`Loaded ${outlets.length} outlets`);
+                if (outlets.length > 0) {
+                    console.log('First outlet sample:', outlets[0]);
+                }
+                
                 return outlets;
                 
             } catch (error) {
@@ -520,10 +638,9 @@
             }
         }
 
-        async function fetchAMData() {
+        async function fetchPivotAMData() {
             try {
-                console.log('Fetching AM data...');
-                const response = await fetch(getAMPivotSheetUrl());
+                const response = await fetch(getPivotAMSheetUrl());
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -531,39 +648,74 @@
                 const text = await response.text();
                 const rows = parseCSV(text);
                 
-                const ams = [];
-                
+                const amData = [];
+                // Skip header row
                 for (let i = 1; i < rows.length; i++) {
                     const row = rows[i];
-                    if (row.length >= 4 && row[0] && row[0].trim() !== '') {
+                    if (row.length >= 5 && row[0] && row[0].trim() !== '') {
                         const am = {
                             name: row[0] || '',
-                            totalTarget: parseIndonesianNumber(row[1]) // B = Total 10 days target
+                            totalTarget: parseIndonesianNumber(row[1]), // Column B
+                            // D1-D10 sales from columns D, E, F, G, H, I, J, K, L, M
+                            totalSales: 0
                         };
                         
-                        // Parse daily sales D=D1, E=D2, etc.
-                        let totalSales = 0;
+                        // Sum all daily sales (columns D through M)
                         for (let day = 1; day <= 10; day++) {
-                            const salesColIndex = 2 + day; // D=3, E=4, F=5, etc.
-                            const daySales = parseIndonesianNumber(row[salesColIndex]);
-                            am[`d${day}Sales`] = daySales;
-                            totalSales += daySales;
+                            const colIndex = 3 + (day - 1); // D=3, E=4, F=5, etc.
+                            const dayValue = parseIndonesianNumber(row[colIndex] || '0');
+                            am.totalSales += dayValue;
                         }
                         
-                        am.totalSales = totalSales;
-                        am.achievementPercent = am.totalTarget > 0 ? (totalSales / am.totalTarget) : 0;
-                        
-                        ams.push(am);
+                        am.achievementPercent = am.totalTarget > 0 ? (am.totalSales / am.totalTarget) * 100 : 0;
+                        amData.push(am);
                     }
                 }
                 
-                console.log(`Loaded ${ams.length} AMs`);
-                return ams;
-                
+                console.log('Loaded AM data:', amData.length);
+                return amData;
             } catch (error) {
                 console.error('Error fetching AM data:', error);
                 return [];
             }
+        }
+
+        // Calculate Current Achievement from Grand Total row
+        function calculateCurrentAchievement() {
+            if (!allOutlets.grandTotalRow) {
+                console.warn('Grand Total row not available');
+                return 0;
+            }
+            
+            let totalAchievement = 0;
+            const grandTotalRow = allOutlets.grandTotalRow;
+            
+            console.log('Calculating Current Achievement from Grand Total row:', grandTotalRow);
+            
+            // Sum D1-D10 from Grand Total row (columns F, H, J, L, N, P, R, T, V, X)
+            for (let day = 1; day <= 10; day++) {
+                const colIndex = 5 + ((day - 1) * 2); // F=5, H=7, J=9, L=11, N=13, P=15, R=17, T=19, V=21, X=23
+                const dayValue = parseIndonesianNumber(grandTotalRow[colIndex] || '0');
+                totalAchievement += dayValue;
+                
+                console.log(`Grand Total Day ${day} (col ${colIndex}): ${grandTotalRow[colIndex]} → ${dayValue}`);
+            }
+            
+            console.log('Total Current Achievement:', totalAchievement);
+            return totalAchievement;
+        }
+
+        // Calculate Daily Achievement for current day
+        function calculateDailyAchievement() {
+            if (!allOutlets.grandTotalRow) return 0;
+            
+            const currentDay = getCurrentCampaignDay();
+            const colIndex = 5 + ((currentDay - 1) * 2); // F=5 for Day1, H=7 for Day2, etc.
+            
+            const dailyValue = parseIndonesianNumber(allOutlets.grandTotalRow[colIndex] || '0');
+            console.log(`Daily Achievement Day ${currentDay} (col ${colIndex}): ${allOutlets.grandTotalRow[colIndex]} → ${dailyValue}`);
+            
+            return dailyValue;
         }
 
         // Login Functions
@@ -576,6 +728,7 @@
             const loginBtnText = document.getElementById('loginBtnText');
             const loginSpinner = document.getElementById('loginSpinner');
             
+            // Show loading state
             loginBtnText.textContent = 'Signing in...';
             loginSpinner.classList.remove('hidden');
             loginBtn.disabled = true;
@@ -600,6 +753,7 @@
                 console.error('Login error:', error);
             }
             
+            // Reset button state
             loginBtnText.textContent = 'Login';
             loginSpinner.classList.add('hidden');
             loginBtn.disabled = false;
@@ -628,7 +782,6 @@
             currentUser = null;
             allUsers = [];
             allOutlets = [];
-            allAMs = [];
             document.getElementById('dashboard').classList.add('hidden');
             document.getElementById('loginPage').classList.remove('hidden');
             document.getElementById('loginForm').reset();
@@ -638,13 +791,13 @@
         async function initializeDashboard() {
             try {
                 allOutlets = await fetchPerformanceData();
-                allAMs = await fetchAMData();
                 filteredOutlets = [...allOutlets];
                 
                 document.getElementById('loadingState').classList.add('hidden');
                 document.getElementById('dashboardContent').classList.remove('hidden');
                 
                 startCountdown();
+                updateDailyProgress();
                 updateNationalProgress();
                 updateMedalLeaderboards();
                 populateFilters();
@@ -667,11 +820,10 @@
             
             try {
                 const newOutlets = await fetchPerformanceData();
-                const newAMs = await fetchAMData();
                 if (newOutlets.length > 0) {
                     allOutlets = newOutlets;
-                    allAMs = newAMs;
                     applyFilters();
+                    updateDailyProgress();
                     updateNationalProgress();
                     updateMedalLeaderboards();
                     updateBottomPerformers();
@@ -708,103 +860,109 @@
             setInterval(updateCountdown, 1000);
         }
 
+        function updateDailyProgress() {
+            const currentDay = getCurrentCampaignDay();
+            const dailyTarget = 1200000000;
+            const dailyAchievement = calculateDailyAchievement();
+            const dailyPercent = (dailyAchievement / dailyTarget) * 100;
+            
+            // Update day label
+            const dayLabels = [
+                'Day 1 (Aug 9)', 'Day 2 (Aug 10)', 'Day 3 (Aug 11)', 'Day 4 (Aug 12)', 'Day 5 (Aug 13)',
+                'Day 6 (Aug 14)', 'Day 7 (Aug 15)', 'Day 8 (Aug 16)', 'Day 9 (Aug 17)', 'Day 10 (Aug 18)'
+            ];
+            
+            document.getElementById('currentDayLabel').textContent = dayLabels[currentDay - 1] || `Day ${currentDay}`;
+            document.getElementById('dailyAchievement').textContent = formatRupiah(dailyAchievement);
+            document.getElementById('dailyPercent').textContent = `${dailyPercent.toFixed(1)}%`;
+            document.getElementById('dailyProgress').style.width = `${Math.min(dailyPercent, 100)}%`;
+        }
+
         function updateNationalProgress() {
-            let totalAchievement = 0;
             const totalTarget = 12000000000;
-            
-            // Use Grand Total row data if available
-            if (grandTotalData && grandTotalData.length > 0) {
-                // Sum F,H,J,L,N,P,R,T,V,X from Grand Total row
-                for (let day = 1; day <= 10; day++) {
-                    const salesColIndex = 4 + (day * 2) - 1; // F=5, H=7, J=9, etc.
-                    totalAchievement += parseIndonesianNumber(grandTotalData[salesColIndex]);
-                }
-            } else {
-                // Fallback: sum all outlet sales
-                allOutlets.forEach(outlet => {
-                    for (let day = 1; day <= 10; day++) {
-                        totalAchievement += outlet[`d${day}Sales`] || 0;
-                    }
-                });
-            }
-            
-            console.log('Total national achievement:', totalAchievement);
-            
-            const achievementPercent = (totalAchievement / totalTarget) * 100;
+            const currentAchievement = calculateCurrentAchievement();
+            const achievementPercent = (currentAchievement / totalTarget) * 100;
             const incentiveProgress = Math.min(achievementPercent / 90 * 100, 100);
             
-            document.getElementById('currentAchievement').textContent = formatIndonesianRupiah(totalAchievement);
+            document.getElementById('currentAchievement').textContent = formatRupiah(currentAchievement);
             document.getElementById('achievementPercent').textContent = `${achievementPercent.toFixed(1)}%`;
             document.getElementById('incentiveProgress').style.width = `${incentiveProgress}%`;
             
             if (achievementPercent >= 90) {
-                document.getElementById('incentiveStatus').textContent = 'UNLOCKED!';
-                document.getElementById('incentiveStatus').className = 'text-sm mt-2 text-green-600 font-bold';
+                document.getElementById('incentiveStatus').textContent = 'UNLOCKED! 🎉';
+                document.getElementById('incentiveStatus').className = 'text-sm mt-3 font-bold text-green-600';
             } else {
-                document.getElementById('incentiveStatus').textContent = `LOCKED (Need ${(90 - achievementPercent).toFixed(1)}% more)`;
-                document.getElementById('incentiveStatus').className = 'text-sm mt-2 text-red-600';
+                const needed = 90 - achievementPercent;
+                document.getElementById('incentiveStatus').textContent = `LOCKED (Need ${needed.toFixed(1)}% more)`;
+                document.getElementById('incentiveStatus').className = 'text-sm mt-3 font-semibold text-red-600';
             }
         }
 
-        function updateMedalLeaderboards() {
-            // Top 5 Outlets by Achievement % (using D1 % from column G)
+        async function updateMedalLeaderboards() {
+            // Top 5 Outlets by Achievement % (using Column G - Day 1 %)
             const outletsByPercent = [...allOutlets]
-                .filter(outlet => outlet.d1Percent > 0)
+                .filter(outlet => outlet.d1Percent > 0) // Only outlets with Day 1 data
                 .sort((a, b) => b.d1Percent - a.d1Percent)
                 .slice(0, 5);
 
             const percentContainer = document.getElementById('topOutletsByPercent');
             percentContainer.innerHTML = outletsByPercent.map((outlet, index) => {
                 const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
-                const colors = ['gold', 'silver', 'bronze', 'bg-blue-100', 'bg-green-100'];
+                const colors = ['gold', 'silver', 'bronze', 'bg-blue-100 border-blue-200', 'bg-green-100 border-green-200'];
                 return `
-                    <div class="medal-card ${colors[index]} p-4 rounded-lg text-center">
-                        <div class="text-2xl mb-2">${medals[index]}</div>
-                        <h4 class="font-bold text-sm">${outlet.name}</h4>
-                        <p class="text-xs text-gray-600">${outlet.am}</p>
-                        <p class="text-lg font-bold">${outlet.d1Percent.toFixed(1)}%</p>
+                    <div class="medal-card ${colors[index]} p-4 rounded-xl text-center border-2">
+                        <div class="text-3xl mb-2">${medals[index]}</div>
+                        <h4 class="font-bold text-sm text-gray-800">${outlet.name}</h4>
+                        <p class="text-xs text-gray-600 mb-1">${outlet.am}</p>
+                        <p class="text-lg font-bold text-gray-900">${outlet.d1Percent.toFixed(1)}%</p>
                     </div>
                 `;
             }).join('');
 
-            // Top 5 Outlets by Sales (using D1 sales from column F)
+            // Top 5 Outlets by Sales (using Column F - Day 1 Sales)
             const outletsBySales = [...allOutlets]
-                .filter(outlet => outlet.d1Sales > 0)
-                .sort((a, b) => b.d1Sales - a.d1Sales)
+                .filter(outlet => outlet.d1 > 0) // Only outlets with Day 1 sales
+                .sort((a, b) => b.d1 - a.d1)
                 .slice(0, 5);
 
             const salesContainer = document.getElementById('topOutletsBySales');
             salesContainer.innerHTML = outletsBySales.map((outlet, index) => {
                 const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
-                const colors = ['gold', 'silver', 'bronze', 'bg-blue-100', 'bg-green-100'];
+                const colors = ['gold', 'silver', 'bronze', 'bg-blue-100 border-blue-200', 'bg-green-100 border-green-200'];
                 return `
-                    <div class="medal-card ${colors[index]} p-4 rounded-lg text-center">
-                        <div class="text-2xl mb-2">${medals[index]}</div>
-                        <h4 class="font-bold text-sm">${outlet.name}</h4>
-                        <p class="text-xs text-gray-600">${outlet.am}</p>
-                        <p class="text-sm font-bold">${formatIndonesianRupiah(outlet.d1Sales)}</p>
+                    <div class="medal-card ${colors[index]} p-4 rounded-xl text-center border-2">
+                        <div class="text-3xl mb-2">${medals[index]}</div>
+                        <h4 class="font-bold text-sm text-gray-800">${outlet.name}</h4>
+                        <p class="text-xs text-gray-600 mb-1">${outlet.am}</p>
+                        <p class="text-sm font-bold text-gray-900">${formatRupiah(outlet.d1)}</p>
                     </div>
                 `;
             }).join('');
 
             // Top 3 Area Managers (from Pivot Target AM sheet)
-            const topAMs = [...allAMs]
-                .sort((a, b) => b.achievementPercent - a.achievementPercent)
-                .slice(0, 3);
+            try {
+                const amData = await fetchPivotAMData();
+                const topAMs = amData
+                    .sort((a, b) => b.achievementPercent - a.achievementPercent)
+                    .slice(0, 3);
 
-            const amContainer = document.getElementById('topAreaManagers');
-            amContainer.innerHTML = topAMs.map((am, index) => {
-                const medals = ['🥇', '🥈', '🥉'];
-                const colors = ['gold', 'silver', 'bronze'];
-                return `
-                    <div class="medal-card ${colors[index]} p-4 rounded-lg text-center">
-                        <div class="text-2xl mb-2">${medals[index]}</div>
-                        <h4 class="font-bold text-sm">${am.name}</h4>
-                        <p class="text-lg font-bold">${(am.achievementPercent * 100).toFixed(1)}%</p>
-                        <p class="text-xs">${formatIndonesianRupiah(am.totalSales)}</p>
-                    </div>
-                `;
-            }).join('');
+                const amContainer = document.getElementById('topAreaManagers');
+                amContainer.innerHTML = topAMs.map((am, index) => {
+                    const medals = ['🥇', '🥈', '🥉'];
+                    const colors = ['gold', 'silver', 'bronze'];
+                    return `
+                        <div class="medal-card ${colors[index]} p-4 rounded-xl text-center border-2">
+                            <div class="text-3xl mb-2">${medals[index]}</div>
+                            <h4 class="font-bold text-sm text-gray-800">${am.name}</h4>
+                            <p class="text-xs text-gray-600 mb-1">Area Manager</p>
+                            <p class="text-lg font-bold text-gray-900">${am.achievementPercent.toFixed(1)}%</p>
+                            <p class="text-xs text-gray-700">${formatRupiah(am.totalSales)}</p>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error updating AM leaderboard:', error);
+            }
         }
 
         function populateFilters() {
@@ -847,13 +1005,12 @@
         }
 
         function createOutletCard(outlet) {
-            // Calculate total sales from F,H,J,L,N,P,R,T,V,X
             let totalSales = 0;
             let totalPercent = 0;
             let activeDays = 0;
             
             for (let day = 1; day <= 10; day++) {
-                totalSales += outlet[`d${day}Sales`] || 0;
+                totalSales += outlet[`d${day}`] || 0;
                 if (outlet[`d${day}Percent`] > 0) {
                     totalPercent += outlet[`d${day}Percent`];
                     activeDays++;
@@ -867,23 +1024,23 @@
                                    avgAchievement >= 70 ? 'performance-average' : 'performance-poor';
 
             return `
-                <div class="outlet-card ${performanceClass} bg-white rounded-lg shadow-lg p-4">
-                    <div class="mb-3">
-                        <h4 class="font-bold text-sm text-gray-900">${outlet.name}</h4>
+                <div class="outlet-card ${performanceClass} bg-white rounded-xl shadow-lg p-6">
+                    <div class="mb-4">
+                        <h4 class="font-bold text-base text-gray-900">${outlet.name}</h4>
                         <p class="text-xs text-gray-600">${outlet.outlet}</p>
-                        <p class="text-xs text-gray-600">${outlet.am}</p>
+                        <p class="text-xs text-blue-600 font-medium">${outlet.am}</p>
                     </div>
                     
                     <div class="grid grid-cols-5 gap-2 mb-4">
                         ${[1,2,3,4,5].map(day => {
-                            const sales = outlet[`d${day}Sales`] || 0;
+                            const sales = outlet[`d${day}`] || 0;
                             const percent = outlet[`d${day}Percent`] || 0;
                             const isActive = sales > 0;
                             return `
-                                <div class="day-badge ${isActive ? 'bg-blue-100 border-blue-300' : 'bg-gray-100 border-gray-300'} 
-                                           border rounded-lg p-2 text-center">
-                                    <div class="text-xs font-semibold">D${day}</div>
-                                    <div class="text-xs ${isActive ? 'text-blue-700' : 'text-gray-500'}">
+                                <div class="day-badge ${isActive ? 'bg-blue-50 border-blue-300 text-blue-700' : 'bg-gray-50 border-gray-300 text-gray-500'} 
+                                           border-2 rounded-lg p-2 text-center">
+                                    <div class="text-xs font-bold">D${day}</div>
+                                    <div class="text-xs">
                                         ${isActive ? `${percent.toFixed(1)}%` : '-'}
                                     </div>
                                 </div>
@@ -893,14 +1050,14 @@
                     
                     <div class="grid grid-cols-5 gap-2 mb-4">
                         ${[6,7,8,9,10].map(day => {
-                            const sales = outlet[`d${day}Sales`] || 0;
+                            const sales = outlet[`d${day}`] || 0;
                             const percent = outlet[`d${day}Percent`] || 0;
                             const isActive = sales > 0;
                             return `
-                                <div class="day-badge ${isActive ? 'bg-blue-100 border-blue-300' : 'bg-gray-100 border-gray-300'} 
-                                           border rounded-lg p-2 text-center">
-                                    <div class="text-xs font-semibold">D${day}</div>
-                                    <div class="text-xs ${isActive ? 'text-blue-700' : 'text-gray-500'}">
+                                <div class="day-badge ${isActive ? 'bg-blue-50 border-blue-300 text-blue-700' : 'bg-gray-50 border-gray-300 text-gray-500'} 
+                                           border-2 rounded-lg p-2 text-center">
+                                    <div class="text-xs font-bold">D${day}</div>
+                                    <div class="text-xs">
                                         ${isActive ? `${percent.toFixed(1)}%` : '-'}
                                     </div>
                                 </div>
@@ -908,14 +1065,14 @@
                         }).join('')}
                     </div>
                     
-                    <div class="border-t pt-3 mt-3">
+                    <div class="border-t pt-4 mt-4 space-y-2">
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Total Sales:</span>
-                            <span class="font-semibold text-green-600">${formatIndonesianRupiah(totalSales)}</span>
+                            <span class="font-bold text-green-600">${formatRupiah(totalSales)}</span>
                         </div>
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Avg Achievement:</span>
-                            <span class="font-semibold ${avgAchievement >= 100 ? 'text-green-600' : avgAchievement >= 90 ? 'text-blue-600' : 'text-orange-600'}">
+                            <span class="font-bold ${avgAchievement >= 100 ? 'text-green-600' : avgAchievement >= 90 ? 'text-blue-600' : 'text-orange-600'}">
                                 ${avgAchievement > 0 ? avgAchievement.toFixed(1) + '%' : '-'}
                             </span>
                         </div>
@@ -945,68 +1102,57 @@
         }
 
         function updateBottomPerformers() {
-            // Bottom 10 Outlets
+            // Bottom 10 Outlets (based on Day 1 performance)
             const outletsByPerformance = [...allOutlets]
-                .map(outlet => {
-                    let totalPercent = 0;
-                    let activeDays = 0;
-                    
-                    for (let day = 1; day <= 10; day++) {
-                        if (outlet[`d${day}Percent`] > 0) {
-                            totalPercent += outlet[`d${day}Percent`];
-                            activeDays++;
-                        }
-                    }
-                    
-                    return {
-                        ...outlet,
-                        avgPercent: activeDays > 0 ? totalPercent / activeDays : 0
-                    };
-                })
-                .sort((a, b) => a.avgPercent - b.avgPercent)
+                .filter(outlet => outlet.d1Percent >= 0) // Include all outlets
+                .sort((a, b) => a.d1Percent - b.d1Percent)
                 .slice(0, 10);
 
             const bottomOutletsContainer = document.getElementById('bottomOutlets');
             bottomOutletsContainer.innerHTML = outletsByPerformance.map(outlet => `
-                <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-red-200">
+                <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-red-200 shadow-sm">
                     <div>
                         <h5 class="font-semibold text-sm">${outlet.name}</h5>
                         <p class="text-xs text-gray-600">${outlet.am}</p>
                     </div>
                     <div class="text-right">
-                        <p class="text-sm font-bold text-red-600">${outlet.avgPercent > 0 ? outlet.avgPercent.toFixed(1) + '%' : 'No data'}</p>
+                        <p class="text-sm font-bold text-red-600">${outlet.d1Percent > 0 ? outlet.d1Percent.toFixed(1) + '%' : 'No data'}</p>
                     </div>
                 </div>
             `).join('');
 
-            // Bottom 3 AMs
-            const bottomAMs = [...allAMs]
-                .sort((a, b) => a.achievementPercent - b.achievementPercent)
-                .slice(0, 3);
+            // Bottom 3 AMs (from Pivot data)
+            fetchPivotAMData().then(amData => {
+                const bottomAMs = amData
+                    .sort((a, b) => a.achievementPercent - b.achievementPercent)
+                    .slice(0, 3);
 
-            const bottomAMsContainer = document.getElementById('bottomAMs');
-            bottomAMsContainer.innerHTML = bottomAMs.map(am => `
-                <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-orange-200">
-                    <div>
-                        <h5 class="font-semibold text-sm">${am.name}</h5>
+                const bottomAMsContainer = document.getElementById('bottomAMs');
+                bottomAMsContainer.innerHTML = bottomAMs.map(am => `
+                    <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-orange-200 shadow-sm">
+                        <div>
+                            <h5 class="font-semibold text-sm">${am.name}</h5>
+                            <p class="text-xs text-gray-600">Area Manager</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-bold text-orange-600">${am.achievementPercent.toFixed(1)}%</p>
+                            <p class="text-xs text-gray-500">${formatRupiah(am.totalSales)}</p>
+                        </div>
                     </div>
-                    <div class="text-right">
-                        <p class="text-sm font-bold text-orange-600">${(am.achievementPercent * 100).toFixed(1)}%</p>
-                        <p class="text-xs text-gray-500">${formatIndonesianRupiah(am.totalSales)}</p>
-                    </div>
-                </div>
-            `).join('');
+                `).join('');
+            });
         }
 
         function initializeCharts() {
-            // Daily Progress Chart
+            // Daily Progress Chart - Show Grand Total for each day
             const dailyCtx = document.getElementById('dailyProgressChart').getContext('2d');
             const dailyData = new Array(10).fill(0);
             
-            for (let day = 1; day <= 10; day++) {
-                allOutlets.forEach(outlet => {
-                    dailyData[day - 1] += outlet[`d${day}Sales`] || 0;
-                });
+            if (allOutlets.grandTotalRow) {
+                for (let day = 1; day <= 10; day++) {
+                    const colIndex = 5 + ((day - 1) * 2); // F, H, J, L, N, P, R, T, V, X
+                    dailyData[day - 1] = parseIndonesianNumber(allOutlets.grandTotalRow[colIndex] || '0');
+                }
             }
 
             dailyProgressChart = new Chart(dailyCtx, {
@@ -1055,52 +1201,56 @@
             // Area Manager Performance Chart
             const amCtx = document.getElementById('amChart').getContext('2d');
             
-            amChart = new Chart(amCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: allAMs.map(am => am.name),
-                    datasets: [{
-                        data: allAMs.map(am => am.totalSales),
-                        backgroundColor: [
-                            '#dc2626', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6',
-                            '#ef4444', '#06b6d4', '#84cc16', '#f97316', '#ec4899'
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                boxWidth: 12,
-                                font: {
-                                    size: 10
+            fetchPivotAMData().then(amData => {
+                amChart = new Chart(amCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: amData.map(am => am.name),
+                        datasets: [{
+                            data: amData.map(am => am.totalSales),
+                            backgroundColor: [
+                                '#dc2626', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6',
+                                '#ef4444', '#06b6d4', '#84cc16', '#f97316', '#ec4899',
+                                '#6b7280', '#14b8a6', '#f97316', '#8b5cf6', '#06b6d4'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    boxWidth: 12,
+                                    font: {
+                                        size: 10
+                                    }
                                 }
                             }
                         }
                     }
-                }
+                });
             });
         }
 
         function updateCharts() {
-            if (dailyProgressChart) {
+            if (dailyProgressChart && allOutlets.grandTotalRow) {
                 const dailyData = new Array(10).fill(0);
                 for (let day = 1; day <= 10; day++) {
-                    allOutlets.forEach(outlet => {
-                        dailyData[day - 1] += outlet[`d${day}Sales`] || 0;
-                    });
+                    const colIndex = 5 + ((day - 1) * 2);
+                    dailyData[day - 1] = parseIndonesianNumber(allOutlets.grandTotalRow[colIndex] || '0');
                 }
                 dailyProgressChart.data.datasets[0].data = dailyData;
                 dailyProgressChart.update();
             }
 
             if (amChart) {
-                amChart.data.labels = allAMs.map(am => am.name);
-                amChart.data.datasets[0].data = allAMs.map(am => am.totalSales);
-                amChart.update();
+                fetchPivotAMData().then(amData => {
+                    amChart.data.labels = amData.map(am => am.name);
+                    amChart.data.datasets[0].data = amData.map(am => am.totalSales);
+                    amChart.update();
+                });
             }
         }
 
