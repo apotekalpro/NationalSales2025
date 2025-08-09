@@ -179,8 +179,8 @@
                         <!-- National Target -->
                         <div class="text-center">
                             <h4 class="text-lg font-semibold mb-2">Total Target (10 Days)</h4>
-                            <p class="text-2xl font-bold text-red-600">Rp 12,000,000,000</p>
-                            <p class="text-sm text-gray-600">Daily: Rp 1,200,000,000</p>
+                            <p class="text-2xl font-bold text-red-600">Rp 12.000.000.000</p>
+                            <p class="text-sm text-gray-600">Daily: Rp 1.200.000.000</p>
                         </div>
                         
                         <!-- Current Achievement -->
@@ -349,33 +349,60 @@
         let filteredOutlets = [];
         let allUsers = [];
         let allOutlets = [];
+        let allAMs = [];
+        let grandTotalData = null;
         let dailyProgressChart = null;
         let amChart = null;
 
-        // Google Sheets configuration
-        const SHEETS_CONFIG = {
-            LOGIN_SHEET_ID: '1GoUm5WLPFl3uu7NlOVR7RU18EtpgxC3zf9k1ckSzfPs',
-            PERFORMANCE_SHEET_ID: '1TkquW9OszwyWSa-ett8hvGe9JgDdgNtX',
-            LOGIN_RANGE: 'Sheet1!A:H',
-            PERFORMANCE_RANGE: 'Update Daily Performance!A:Z'
-        };
+        // Embedded login data
+        const EMBEDDED_USERS = [
+            { name: "ENI KHUZAIMAH", email: "eni.khuzaimah@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
+            { name: "ADE IRMA SEPTIANI AIDHA", email: "ade.irma@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
+            { name: "APRIANA LUMBAN GAOL", email: "apriana.gaol@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
+            { name: "NARTA LENA GINTING", email: "narta.lena@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
+            { name: "HANNA DOLI BR KABAN", email: "hanna.doli@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
+            { name: "JESIKA SILITONGA", email: "jesika.silitonga@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
+            { name: "LINDA NOVAWATI SIHOMBING", email: "linda.sihombing@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
+            { name: "CAMELIA FITRIANI", email: "camelia.fitriani@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
+            { name: "ISMA LESTARI", email: "Isma.lestari@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
+            { name: "NUR ADE ARYANI", email: "nurade.aryani@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
+            { name: "PUTRI WULANDARI", email: "putri.wulandari@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
+            { name: "SITI NURLAILA", email: "siti.nurlaila@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
+            { name: "FUNNA ANINDYA", email: "funna.anindya@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
+            { name: "JULAINI", email: "Julaini@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
+            { name: "SANTI FARIDA YANTI", email: "santi.faridayanti@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
+            { name: "JEPPARIA M SIREGAR", email: "jepparia.siregar@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
+            { name: "LELIANA OKTAVIA SARAGIH", email: "leli.saragih@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
+            { name: "GENY SARASWATI", email: "geny.saraswati@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
+            { name: "BAID SION BR. SINAGA", email: "baid.sion@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
+            { name: "SANNAULI SIAHAAN", email: "sanna.siahaan@apotekalpro.id", status: "Active", role: "Area Manager", password: "Alpro@123" },
+            { name: "TOMAS", email: "khoo.ziyu@apotekalpro.id", status: "Active", role: "CHIEF", password: "Alpro@123" },
+            { name: "BERNARD", email: "bernard.lee@apotekalpro.id", status: "Active", role: "CHIEF", password: "Alpro@123" },
+            { name: "EUGENNE", email: "teo.yinghui@apotekalpro.id", status: "Active", role: "CHIEF", password: "Alpro@123" },
+            { name: "YC", email: "yinchen@apotekalpro.id", status: "Active", role: "CHIEF", password: "Alpro@123" },
+            { name: "LESTY", email: "rupa.lesty@apotekalpro.id", status: "Active", role: "CHIEF", password: "Alpro@123" },
+            { name: "ANTO", email: "tarjo.susianto@apotekalpro.id", status: "Active", role: "BPT", password: "Alpro@123" },
+            { name: "SUWAHYU", email: "suwahyu@apotekalpro.id", status: "Active", role: "OPERATION", password: "Alpro@123" },
+            { name: "DEVI", email: "devi.purba@apotekalpro.id", status: "Active", role: "STRATEGY", password: "Alpro@123" }
+        ];
 
-        // Google Sheets API URLs (using public access)
-        function getLoginSheetUrl() {
-            return `https://docs.google.com/spreadsheets/d/${SHEETS_CONFIG.LOGIN_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Sheet1`;
-        }
+        // Google Sheets configuration
+        const PERFORMANCE_SHEET_ID = '1TkquW9OszwyWSa-ett8hvGe9JgDdgNtX';
 
         function getPerformanceSheetUrl() {
-            return `https://docs.google.com/spreadsheets/d/${SHEETS_CONFIG.PERFORMANCE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Update Daily Performance`;
+            return `https://docs.google.com/spreadsheets/d/${PERFORMANCE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Update Daily Performance`;
         }
 
-        // Utility function to parse CSV
+        function getAMPivotSheetUrl() {
+            return `https://docs.google.com/spreadsheets/d/${PERFORMANCE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Pivot Target AM`;
+        }
+
+        // Parse CSV utility
         function parseCSV(text) {
             const rows = [];
             const lines = text.split('\n');
             for (let line of lines) {
                 if (line.trim()) {
-                    // Simple CSV parsing (handles quoted fields)
                     const row = [];
                     let current = '';
                     let inQuotes = false;
@@ -398,69 +425,143 @@
             return rows;
         }
 
-        // Fetch data from Google Sheets
-        async function fetchLoginData() {
-            try {
-                const response = await fetch(getLoginSheetUrl());
-                const text = await response.text();
-                const rows = parseCSV(text);
-                
-                // Skip header row and parse data
-                const users = [];
-                for (let i = 1; i < rows.length; i++) {
-                    const row = rows[i];
-                    if (row.length >= 8 && row[1]) { // Check if email exists
-                        users.push({
-                            name: row[0] || '',
-                            email: row[1] || '',
-                            status: row[2] || '',
-                            role: row[3] || '',
-                            password: row[7] || ''
-                        });
-                    }
+        // Parse Indonesian number format (. = thousands, , = decimal)
+        function parseIndonesianNumber(value) {
+            if (!value || value === '' || value === '-') return 0;
+            
+            // Clean the value - remove quotes and spaces
+            let cleanValue = String(value).replace(/['"]/g, '').trim();
+            
+            // If it contains both . and , then . is thousands separator
+            if (cleanValue.includes('.') && cleanValue.includes(',')) {
+                // Format like 1.234.567,89
+                cleanValue = cleanValue.replace(/\./g, '').replace(',', '.');
+            } else if (cleanValue.includes('.')) {
+                // Could be thousands (1.234.567) or decimal (1.23)
+                // Count dots - if more than 1, it's thousands separator
+                const dotCount = (cleanValue.match(/\./g) || []).length;
+                if (dotCount > 1 || cleanValue.length > 6) {
+                    // Thousands separator: 1.234.567 or 1.234
+                    cleanValue = cleanValue.replace(/\./g, '');
                 }
-                return users;
-            } catch (error) {
-                console.error('Error fetching login data:', error);
-                return [];
+                // Otherwise it's decimal (1.23) - keep as is
             }
+            
+            const numValue = parseFloat(cleanValue);
+            return isNaN(numValue) ? 0 : numValue;
+        }
+
+        // Format number for Indonesian display
+        function formatIndonesianRupiah(amount) {
+            if (amount === 0) return 'Rp 0';
+            
+            // Format with periods as thousands separators
+            return 'Rp ' + Math.round(amount).toLocaleString('de-DE');
         }
 
         async function fetchPerformanceData() {
             try {
+                console.log('Fetching performance data...');
                 const response = await fetch(getPerformanceSheetUrl());
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const text = await response.text();
                 const rows = parseCSV(text);
                 
-                // Skip header row and parse data
                 const outlets = [];
+                let grandTotalRow = null;
+                
+                // Find Grand Total row and parse outlet data
                 for (let i = 1; i < rows.length; i++) {
                     const row = rows[i];
-                    if (row.length >= 5 && row[0]) { // Check if outlet code exists
-                        const outlet = {
-                            outlet: row[0] || '',
-                            name: row[1] || '',
-                            am: row[2] || '',
-                            totalTarget: parseFloat(row[3]?.replace(/,/g, '') || '0') || 0,
-                            dailyTarget: parseFloat(row[4]?.replace(/,/g, '') || '0') || 0
-                        };
-                        
-                        // Parse D1-D10 data (assuming columns F, H, J, L, N, P, R, T, V, X for sales)
-                        // and G, I, K, M, O, Q, S, U, W, Y for percentages
-                        for (let day = 1; day <= 10; day++) {
-                            const salesColIndex = 4 + (day * 2); // F=5, H=7, J=9, etc.
-                            const percentColIndex = salesColIndex + 1;
-                            
-                            outlet[`d${day}`] = parseFloat(row[salesColIndex]?.replace(/,/g, '') || '0') || 0;
-                            outlet[`d${day}Percent`] = parseFloat(row[percentColIndex] || '0') || 0;
+                    if (row.length >= 6 && row[0]) {
+                        // Check if this is Grand Total row
+                        if (row[0].toLowerCase().includes('grand total')) {
+                            grandTotalRow = row;
+                            console.log('Found Grand Total row:', grandTotalRow);
+                            continue;
                         }
                         
-                        outlets.push(outlet);
+                        if (row[0].trim() !== '') {
+                            const outlet = {
+                                outlet: row[0] || '',
+                                name: row[1] || '',
+                                am: row[2] || '',
+                                totalTarget: parseIndonesianNumber(row[3]), // D = Total target 10 days
+                                dailyTarget: parseIndonesianNumber(row[4])  // E = Daily target
+                            };
+                            
+                            // Parse daily sales and percentages
+                            // F=D1 sales, G=D1%, H=D2 sales, I=D2%, etc.
+                            for (let day = 1; day <= 10; day++) {
+                                const salesColIndex = 4 + (day * 2) - 1; // F=5, H=7, J=9, etc.
+                                const percentColIndex = salesColIndex + 1;  // G=6, I=8, K=10, etc.
+                                
+                                outlet[`d${day}Sales`] = parseIndonesianNumber(row[salesColIndex]);
+                                outlet[`d${day}Percent`] = parseIndonesianNumber(row[percentColIndex]);
+                            }
+                            
+                            outlets.push(outlet);
+                        }
                     }
                 }
+                
+                // Store Grand Total data globally
+                grandTotalData = grandTotalRow;
+                
+                console.log(`Loaded ${outlets.length} outlets`);
                 return outlets;
+                
             } catch (error) {
                 console.error('Error fetching performance data:', error);
+                return [];
+            }
+        }
+
+        async function fetchAMData() {
+            try {
+                console.log('Fetching AM data...');
+                const response = await fetch(getAMPivotSheetUrl());
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const text = await response.text();
+                const rows = parseCSV(text);
+                
+                const ams = [];
+                
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (row.length >= 4 && row[0] && row[0].trim() !== '') {
+                        const am = {
+                            name: row[0] || '',
+                            totalTarget: parseIndonesianNumber(row[1]) // B = Total 10 days target
+                        };
+                        
+                        // Parse daily sales D=D1, E=D2, etc.
+                        let totalSales = 0;
+                        for (let day = 1; day <= 10; day++) {
+                            const salesColIndex = 2 + day; // D=3, E=4, F=5, etc.
+                            const daySales = parseIndonesianNumber(row[salesColIndex]);
+                            am[`d${day}Sales`] = daySales;
+                            totalSales += daySales;
+                        }
+                        
+                        am.totalSales = totalSales;
+                        am.achievementPercent = am.totalTarget > 0 ? (totalSales / am.totalTarget) : 0;
+                        
+                        ams.push(am);
+                    }
+                }
+                
+                console.log(`Loaded ${ams.length} AMs`);
+                return ams;
+                
+            } catch (error) {
+                console.error('Error fetching AM data:', error);
                 return [];
             }
         }
@@ -475,20 +576,15 @@
             const loginBtnText = document.getElementById('loginBtnText');
             const loginSpinner = document.getElementById('loginSpinner');
             
-            // Show loading state
             loginBtnText.textContent = 'Signing in...';
             loginSpinner.classList.remove('hidden');
             loginBtn.disabled = true;
             
             try {
-                // Fetch login data if not already loaded
-                if (allUsers.length === 0) {
-                    allUsers = await fetchLoginData();
-                }
+                allUsers = EMBEDDED_USERS;
                 
-                // Find user
                 const user = allUsers.find(u => 
-                    u.email.toLowerCase() === email.toLowerCase() && 
+                    u.email.toLowerCase().trim() === email.toLowerCase().trim() && 
                     u.password === password && 
                     u.status.toLowerCase() === 'active'
                 );
@@ -497,14 +593,13 @@
                     currentUser = user;
                     showDashboard();
                 } else {
-                    showLoginError('Invalid email or password');
+                    showLoginError('Invalid email or password. Please check your credentials.');
                 }
             } catch (error) {
                 showLoginError('Error connecting to server. Please try again.');
                 console.error('Login error:', error);
             }
             
-            // Reset button state
             loginBtnText.textContent = 'Login';
             loginSpinner.classList.add('hidden');
             loginBtn.disabled = false;
@@ -523,11 +618,9 @@
             document.getElementById('loadingState').classList.remove('hidden');
             document.getElementById('dashboardContent').classList.add('hidden');
             
-            // Set user info
             document.getElementById('userName').textContent = currentUser.name;
             document.getElementById('userRole').textContent = currentUser.role;
             
-            // Initialize dashboard
             await initializeDashboard();
         }
 
@@ -535,24 +628,22 @@
             currentUser = null;
             allUsers = [];
             allOutlets = [];
+            allAMs = [];
             document.getElementById('dashboard').classList.add('hidden');
             document.getElementById('loginPage').classList.remove('hidden');
             document.getElementById('loginForm').reset();
             document.getElementById('loginError').classList.add('hidden');
         }
 
-        // Dashboard Functions
         async function initializeDashboard() {
             try {
-                // Fetch performance data
                 allOutlets = await fetchPerformanceData();
+                allAMs = await fetchAMData();
                 filteredOutlets = [...allOutlets];
                 
-                // Hide loading and show content
                 document.getElementById('loadingState').classList.add('hidden');
                 document.getElementById('dashboardContent').classList.remove('hidden');
                 
-                // Initialize dashboard components
                 startCountdown();
                 updateNationalProgress();
                 updateMedalLeaderboards();
@@ -561,8 +652,7 @@
                 updateBottomPerformers();
                 initializeCharts();
                 
-                // Set up auto-refresh
-                setInterval(refreshData, 30000); // Refresh every 30 seconds
+                setInterval(refreshData, 30000);
                 
             } catch (error) {
                 console.error('Error initializing dashboard:', error);
@@ -576,10 +666,11 @@
             refreshIcon.classList.add('animate-spin');
             
             try {
-                // Refresh performance data
                 const newOutlets = await fetchPerformanceData();
+                const newAMs = await fetchAMData();
                 if (newOutlets.length > 0) {
                     allOutlets = newOutlets;
+                    allAMs = newAMs;
                     applyFilters();
                     updateNationalProgress();
                     updateMedalLeaderboards();
@@ -621,19 +712,29 @@
             let totalAchievement = 0;
             const totalTarget = 12000000000;
             
-            allOutlets.forEach(outlet => {
+            // Use Grand Total row data if available
+            if (grandTotalData && grandTotalData.length > 0) {
+                // Sum F,H,J,L,N,P,R,T,V,X from Grand Total row
                 for (let day = 1; day <= 10; day++) {
-                    totalAchievement += outlet[`d${day}`] || 0;
+                    const salesColIndex = 4 + (day * 2) - 1; // F=5, H=7, J=9, etc.
+                    totalAchievement += parseIndonesianNumber(grandTotalData[salesColIndex]);
                 }
-            });
+            } else {
+                // Fallback: sum all outlet sales
+                allOutlets.forEach(outlet => {
+                    for (let day = 1; day <= 10; day++) {
+                        totalAchievement += outlet[`d${day}Sales`] || 0;
+                    }
+                });
+            }
+            
+            console.log('Total national achievement:', totalAchievement);
             
             const achievementPercent = (totalAchievement / totalTarget) * 100;
             const incentiveProgress = Math.min(achievementPercent / 90 * 100, 100);
             
-            document.getElementById('currentAchievement').textContent = 
-                `Rp ${totalAchievement.toLocaleString('id-ID')}`;
-            document.getElementById('achievementPercent').textContent = 
-                `${achievementPercent.toFixed(1)}%`;
+            document.getElementById('currentAchievement').textContent = formatIndonesianRupiah(totalAchievement);
+            document.getElementById('achievementPercent').textContent = `${achievementPercent.toFixed(1)}%`;
             document.getElementById('incentiveProgress').style.width = `${incentiveProgress}%`;
             
             if (achievementPercent >= 90) {
@@ -646,25 +747,10 @@
         }
 
         function updateMedalLeaderboards() {
-            // Top 5 Outlets by Achievement %
+            // Top 5 Outlets by Achievement % (using D1 % from column G)
             const outletsByPercent = [...allOutlets]
-                .map(outlet => {
-                    let totalPercent = 0;
-                    let activeDays = 0;
-                    
-                    for (let day = 1; day <= 10; day++) {
-                        if (outlet[`d${day}Percent`] > 0) {
-                            totalPercent += outlet[`d${day}Percent`];
-                            activeDays++;
-                        }
-                    }
-                    
-                    return {
-                        ...outlet,
-                        avgPercent: activeDays > 0 ? totalPercent / activeDays : 0
-                    };
-                })
-                .sort((a, b) => b.avgPercent - a.avgPercent)
+                .filter(outlet => outlet.d1Percent > 0)
+                .sort((a, b) => b.d1Percent - a.d1Percent)
                 .slice(0, 5);
 
             const percentContainer = document.getElementById('topOutletsByPercent');
@@ -676,21 +762,15 @@
                         <div class="text-2xl mb-2">${medals[index]}</div>
                         <h4 class="font-bold text-sm">${outlet.name}</h4>
                         <p class="text-xs text-gray-600">${outlet.am}</p>
-                        <p class="text-lg font-bold">${outlet.avgPercent.toFixed(1)}%</p>
+                        <p class="text-lg font-bold">${outlet.d1Percent.toFixed(1)}%</p>
                     </div>
                 `;
             }).join('');
 
-            // Top 5 Outlets by Sales
+            // Top 5 Outlets by Sales (using D1 sales from column F)
             const outletsBySales = [...allOutlets]
-                .map(outlet => {
-                    let totalSales = 0;
-                    for (let day = 1; day <= 10; day++) {
-                        totalSales += outlet[`d${day}`] || 0;
-                    }
-                    return { ...outlet, totalSales };
-                })
-                .sort((a, b) => b.totalSales - a.totalSales)
+                .filter(outlet => outlet.d1Sales > 0)
+                .sort((a, b) => b.d1Sales - a.d1Sales)
                 .slice(0, 5);
 
             const salesContainer = document.getElementById('topOutletsBySales');
@@ -702,34 +782,13 @@
                         <div class="text-2xl mb-2">${medals[index]}</div>
                         <h4 class="font-bold text-sm">${outlet.name}</h4>
                         <p class="text-xs text-gray-600">${outlet.am}</p>
-                        <p class="text-sm font-bold">Rp ${outlet.totalSales.toLocaleString('id-ID')}</p>
+                        <p class="text-sm font-bold">${formatIndonesianRupiah(outlet.d1Sales)}</p>
                     </div>
                 `;
             }).join('');
 
-            // Top 3 Area Managers
-            const amPerformance = {};
-            allOutlets.forEach(outlet => {
-                if (!amPerformance[outlet.am]) {
-                    amPerformance[outlet.am] = { totalSales: 0, totalTarget: 0, outlets: 0 };
-                }
-                
-                let outletTotalSales = 0;
-                for (let day = 1; day <= 10; day++) {
-                    outletTotalSales += outlet[`d${day}`] || 0;
-                }
-                
-                amPerformance[outlet.am].totalSales += outletTotalSales;
-                amPerformance[outlet.am].totalTarget += outlet.totalTarget || 0;
-                amPerformance[outlet.am].outlets++;
-            });
-
-            const topAMs = Object.entries(amPerformance)
-                .map(([name, data]) => ({
-                    name,
-                    ...data,
-                    achievementPercent: data.totalTarget > 0 ? (data.totalSales / data.totalTarget) * 100 : 0
-                }))
+            // Top 3 Area Managers (from Pivot Target AM sheet)
+            const topAMs = [...allAMs]
                 .sort((a, b) => b.achievementPercent - a.achievementPercent)
                 .slice(0, 3);
 
@@ -741,9 +800,8 @@
                     <div class="medal-card ${colors[index]} p-4 rounded-lg text-center">
                         <div class="text-2xl mb-2">${medals[index]}</div>
                         <h4 class="font-bold text-sm">${am.name}</h4>
-                        <p class="text-xs text-gray-600">${am.outlets} outlets</p>
-                        <p class="text-lg font-bold">${am.achievementPercent.toFixed(1)}%</p>
-                        <p class="text-xs">Rp ${am.totalSales.toLocaleString('id-ID')}</p>
+                        <p class="text-lg font-bold">${(am.achievementPercent * 100).toFixed(1)}%</p>
+                        <p class="text-xs">${formatIndonesianRupiah(am.totalSales)}</p>
                     </div>
                 `;
             }).join('');
@@ -756,7 +814,6 @@
             amFilter.innerHTML = '<option value="">All Area Managers</option>' +
                 uniqueAMs.map(am => `<option value="${am}">${am}</option>`).join('');
 
-            // Add event listeners
             document.getElementById('amFilter').addEventListener('change', applyFilters);
             document.getElementById('searchOutlet').addEventListener('input', applyFilters);
         }
@@ -790,12 +847,13 @@
         }
 
         function createOutletCard(outlet) {
+            // Calculate total sales from F,H,J,L,N,P,R,T,V,X
             let totalSales = 0;
             let totalPercent = 0;
             let activeDays = 0;
             
             for (let day = 1; day <= 10; day++) {
-                totalSales += outlet[`d${day}`] || 0;
+                totalSales += outlet[`d${day}Sales`] || 0;
                 if (outlet[`d${day}Percent`] > 0) {
                     totalPercent += outlet[`d${day}Percent`];
                     activeDays++;
@@ -818,7 +876,7 @@
                     
                     <div class="grid grid-cols-5 gap-2 mb-4">
                         ${[1,2,3,4,5].map(day => {
-                            const sales = outlet[`d${day}`] || 0;
+                            const sales = outlet[`d${day}Sales`] || 0;
                             const percent = outlet[`d${day}Percent`] || 0;
                             const isActive = sales > 0;
                             return `
@@ -835,7 +893,7 @@
                     
                     <div class="grid grid-cols-5 gap-2 mb-4">
                         ${[6,7,8,9,10].map(day => {
-                            const sales = outlet[`d${day}`] || 0;
+                            const sales = outlet[`d${day}Sales`] || 0;
                             const percent = outlet[`d${day}Percent`] || 0;
                             const isActive = sales > 0;
                             return `
@@ -853,7 +911,7 @@
                     <div class="border-t pt-3 mt-3">
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Total Sales:</span>
-                            <span class="font-semibold text-green-600">Rp ${totalSales.toLocaleString('id-ID')}</span>
+                            <span class="font-semibold text-green-600">${formatIndonesianRupiah(totalSales)}</span>
                         </div>
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Avg Achievement:</span>
@@ -922,28 +980,7 @@
             `).join('');
 
             // Bottom 3 AMs
-            const amPerformance = {};
-            allOutlets.forEach(outlet => {
-                if (!amPerformance[outlet.am]) {
-                    amPerformance[outlet.am] = { totalSales: 0, totalTarget: 0, outlets: [] };
-                }
-                
-                let outletTotalSales = 0;
-                for (let day = 1; day <= 10; day++) {
-                    outletTotalSales += outlet[`d${day}`] || 0;
-                }
-                
-                amPerformance[outlet.am].totalSales += outletTotalSales;
-                amPerformance[outlet.am].totalTarget += outlet.totalTarget || 0;
-                amPerformance[outlet.am].outlets.push(outlet.name);
-            });
-
-            const bottomAMs = Object.entries(amPerformance)
-                .map(([name, data]) => ({
-                    name,
-                    ...data,
-                    achievementPercent: data.totalTarget > 0 ? (data.totalSales / data.totalTarget) * 100 : 0
-                }))
+            const bottomAMs = [...allAMs]
                 .sort((a, b) => a.achievementPercent - b.achievementPercent)
                 .slice(0, 3);
 
@@ -952,11 +989,10 @@
                 <div class="flex justify-between items-center p-3 bg-white rounded-lg border border-orange-200">
                     <div>
                         <h5 class="font-semibold text-sm">${am.name}</h5>
-                        <p class="text-xs text-gray-600">${am.outlets.length} outlets</p>
                     </div>
                     <div class="text-right">
-                        <p class="text-sm font-bold text-orange-600">${am.achievementPercent.toFixed(1)}%</p>
-                        <p class="text-xs text-gray-500">Rp ${am.totalSales.toLocaleString('id-ID')}</p>
+                        <p class="text-sm font-bold text-orange-600">${(am.achievementPercent * 100).toFixed(1)}%</p>
+                        <p class="text-xs text-gray-500">${formatIndonesianRupiah(am.totalSales)}</p>
                     </div>
                 </div>
             `).join('');
@@ -967,10 +1003,9 @@
             const dailyCtx = document.getElementById('dailyProgressChart').getContext('2d');
             const dailyData = new Array(10).fill(0);
             
-            // Calculate daily totals
             for (let day = 1; day <= 10; day++) {
                 allOutlets.forEach(outlet => {
-                    dailyData[day - 1] += outlet[`d${day}`] || 0;
+                    dailyData[day - 1] += outlet[`d${day}Sales`] || 0;
                 });
             }
 
@@ -1020,23 +1055,12 @@
             // Area Manager Performance Chart
             const amCtx = document.getElementById('amChart').getContext('2d');
             
-            // Calculate AM performance data
-            const amPerformance = {};
-            allOutlets.forEach(outlet => {
-                if (!amPerformance[outlet.am]) {
-                    amPerformance[outlet.am] = 0;
-                }
-                for (let day = 1; day <= 10; day++) {
-                    amPerformance[outlet.am] += outlet[`d${day}`] || 0;
-                }
-            });
-
             amChart = new Chart(amCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: Object.keys(amPerformance),
+                    labels: allAMs.map(am => am.name),
                     datasets: [{
-                        data: Object.values(amPerformance),
+                        data: allAMs.map(am => am.totalSales),
                         backgroundColor: [
                             '#dc2626', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6',
                             '#ef4444', '#06b6d4', '#84cc16', '#f97316', '#ec4899'
@@ -1063,11 +1087,10 @@
 
         function updateCharts() {
             if (dailyProgressChart) {
-                // Update daily progress chart
                 const dailyData = new Array(10).fill(0);
                 for (let day = 1; day <= 10; day++) {
                     allOutlets.forEach(outlet => {
-                        dailyData[day - 1] += outlet[`d${day}`] || 0;
+                        dailyData[day - 1] += outlet[`d${day}Sales`] || 0;
                     });
                 }
                 dailyProgressChart.data.datasets[0].data = dailyData;
@@ -1075,23 +1098,12 @@
             }
 
             if (amChart) {
-                // Update AM chart
-                const amPerformance = {};
-                allOutlets.forEach(outlet => {
-                    if (!amPerformance[outlet.am]) {
-                        amPerformance[outlet.am] = 0;
-                    }
-                    for (let day = 1; day <= 10; day++) {
-                        amPerformance[outlet.am] += outlet[`d${day}`] || 0;
-                    }
-                });
-                amChart.data.labels = Object.keys(amPerformance);
-                amChart.data.datasets[0].data = Object.values(amPerformance);
+                amChart.data.labels = allAMs.map(am => am.name);
+                amChart.data.datasets[0].data = allAMs.map(am => am.totalSales);
                 amChart.update();
             }
         }
 
-        // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             // Always show login page on load
         });
