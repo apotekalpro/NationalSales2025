@@ -142,61 +142,62 @@
             background: linear-gradient(135deg, #3b82f6 0%, #1e40af 50%, #1e3a8a 100%);
             box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
         }
-        
+
+        /* Area Manager Table Styles */
         .am-table {
-            font-size: 0.8rem;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
         
         .am-table th {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+            color: white;
             font-weight: 600;
+            padding: 12px 8px;
             text-align: center;
-            padding: 8px 4px;
-            border: 1px solid #e5e7eb;
+            font-size: 12px;
+            border-right: 1px solid #4b5563;
         }
         
         .am-table td {
-            padding: 6px 4px;
-            border: 1px solid #e5e7eb;
+            padding: 10px 8px;
             text-align: center;
+            font-size: 11px;
+            border-right: 1px solid #e5e7eb;
+            border-bottom: 1px solid #f3f4f6;
         }
         
-        .am-table .am-name {
-            text-align: left;
+        .am-table tbody tr:hover {
+            background-color: #f8fafc;
+            transform: scale(1.01);
+            transition: all 0.2s ease;
+        }
+        
+        .am-name-col {
+            background-color: #f9fafb;
             font-weight: 600;
-            min-width: 120px;
+            text-align: left !important;
+            padding-left: 12px !important;
+            min-width: 150px;
         }
         
-        .am-table .target-col {
+        .target-col {
             background-color: #fef3c7;
+            font-weight: 600;
+            color: #92400e;
         }
         
-        .am-table .achievement-col {
+        .achievement-col {
             font-weight: 700;
+            font-size: 13px;
         }
         
         .achievement-excellent { background-color: #d1fae5; color: #065f46; }
         .achievement-good { background-color: #dbeafe; color: #1e40af; }
         .achievement-average { background-color: #fef3c7; color: #92400e; }
-        .achievement-poor { background-color: #fecaca; color: #991b1b; }
-        
-        .day-sales-cell {
-            min-width: 70px;
-            font-size: 0.7rem;
-        }
-        
-        @media (max-width: 768px) {
-            .am-table {
-                font-size: 0.6rem;
-            }
-            .day-sales-cell {
-                min-width: 50px;
-                font-size: 0.6rem;
-            }
-            .am-table th, .am-table td {
-                padding: 4px 2px;
-            }
-        }
+        .achievement-poor { background-color: #fee2e2; color: #991b1b; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
@@ -357,53 +358,6 @@
                 </div>
             </div>
 
-            <!-- Area Manager Performance Table -->
-            <div class="mb-8">
-                <div class="card-enhanced rounded-2xl shadow-xl p-8">
-                    <div class="text-center mb-6">
-                        <h3 class="text-2xl font-bold text-gray-800 mb-2">
-                            <i class="fas fa-table mr-2 text-blue-600"></i>
-                            Area Manager Performance Table
-                        </h3>
-                        <p class="text-gray-600">Complete 10-day breakdown with targets, daily sales, and achievement percentages</p>
-                    </div>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="am-table w-full table-auto border-collapse rounded-lg overflow-hidden shadow-sm">
-                            <thead>
-                                <tr>
-                                    <th rowspan="2" class="am-name">Area Manager</th>
-                                    <th rowspan="2" class="target-col">10-Day Target</th>
-                                    <th colspan="10" class="border-b-2 border-gray-300">Daily Sales (D1 - D10)</th>
-                                    <th rowspan="2" class="achievement-col">Total Sales</th>
-                                    <th rowspan="2" class="achievement-col">Achievement %</th>
-                                </tr>
-                                <tr>
-                                    <th class="day-sales-cell">D1</th>
-                                    <th class="day-sales-cell">D2</th>
-                                    <th class="day-sales-cell">D3</th>
-                                    <th class="day-sales-cell">D4</th>
-                                    <th class="day-sales-cell">D5</th>
-                                    <th class="day-sales-cell">D6</th>
-                                    <th class="day-sales-cell">D7</th>
-                                    <th class="day-sales-cell">D8</th>
-                                    <th class="day-sales-cell">D9</th>
-                                    <th class="day-sales-cell">D10</th>
-                                </tr>
-                            </thead>
-                            <tbody id="amTableBody">
-                                <tr>
-                                    <td colspan="14" class="text-center py-8 text-gray-500">
-                                        <i class="fas fa-spinner fa-spin mr-2"></i>
-                                        Loading Area Manager data...
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
             <!-- Medal Leaderboards -->
             <div class="mb-8">
                 <h2 class="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-red-600 to-red-800 bg-clip-text text-transparent">
@@ -456,6 +410,67 @@
                             <i class="fas fa-exclamation-triangle text-orange-500 mr-2"></i>
                             <strong>Syarat:</strong> Target nasional minimal 90% untuk unlock incentive
                         </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="mb-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="card-enhanced rounded-2xl shadow-xl p-8">
+                        <h3 class="text-xl font-bold mb-6 text-gray-800">Daily National Progress</h3>
+                        <div style="height: 300px;">
+                            <canvas id="dailyProgressChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="card-enhanced rounded-2xl shadow-xl p-8">
+                        <h3 class="text-xl font-bold mb-6 text-gray-800">Area Manager Performance</h3>
+                        <div style="height: 300px;">
+                            <canvas id="amChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Area Manager Performance Table -->
+            <div class="mb-8">
+                <div class="card-enhanced rounded-2xl shadow-xl p-8">
+                    <div class="flex items-center justify-center mb-6">
+                        <i class="fas fa-table text-3xl text-blue-600 mr-4"></i>
+                        <div class="text-center">
+                            <h3 class="text-2xl font-bold text-gray-900">Area Manager Performance Table</h3>
+                            <p class="text-gray-600">Complete 10-day breakdown with targets, daily sales, and achievement percentages</p>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="am-table w-full">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" class="am-name-col">Area Manager</th>
+                                    <th rowspan="2" class="target-col">10-Day<br>Target</th>
+                                    <th colspan="10">Daily Sales (D1 - D10)</th>
+                                    <th rowspan="2">Total<br>Sales</th>
+                                    <th rowspan="2">Achievement<br>%</th>
+                                </tr>
+                                <tr>
+                                    <th>D1</th>
+                                    <th>D2</th>
+                                    <th>D3</th>
+                                    <th>D4</th>
+                                    <th>D5</th>
+                                    <th>D6</th>
+                                    <th>D7</th>
+                                    <th>D8</th>
+                                    <th>D9</th>
+                                    <th>D10</th>
+                                </tr>
+                            </thead>
+                            <tbody id="amTableBody">
+                                <!-- Table rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -517,25 +532,6 @@
                         <div id="bottomAMs" class="space-y-3"></div>
                         <div class="mt-6 text-sm text-orange-700 bg-orange-200 rounded-lg p-3">
                             <p><i class="fas fa-users mr-2"></i> Review regional strategy and support outlet teams!</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Charts Section -->
-            <div class="mb-8">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="card-enhanced rounded-2xl shadow-xl p-8">
-                        <h3 class="text-xl font-bold mb-6 text-gray-800">Daily National Progress</h3>
-                        <div style="height: 300px;">
-                            <canvas id="dailyProgressChart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="card-enhanced rounded-2xl shadow-xl p-8">
-                        <h3 class="text-xl font-bold mb-6 text-gray-800">Area Manager Performance</h3>
-                        <div style="height: 300px;">
-                            <canvas id="amChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -652,16 +648,10 @@
             return 'Rp ' + amount.toLocaleString('id-ID');
         }
 
-        // Format number for display in table (shorter format)
-        function formatRupiahShort(amount) {
-            if (amount === 0) return '-';
-            
-            if (amount >= 1000000) {
-                return (amount / 1000000).toFixed(1) + 'M';
-            } else if (amount >= 1000) {
-                return (amount / 1000).toFixed(0) + 'K';
-            }
-            return amount.toLocaleString('id-ID');
+        // Format numbers in millions for table display
+        function formatMillion(amount) {
+            if (amount === 0) return '0M';
+            return (amount / 1000000).toFixed(1) + 'M';
         }
 
         // Get current campaign day (Aug 9 = Day 1, Aug 10 = Day 2, etc.)
@@ -774,15 +764,15 @@
                             totalTarget: parseIndonesianNumber(row[1]), // Column B
                             // D1-D10 sales from columns D, E, F, G, H, I, J, K, L, M
                             totalSales: 0,
-                            dailySales: []
+                            dailySales: {}
                         };
                         
-                        // Sum all daily sales (columns D through M) and store individual daily values
+                        // Parse individual daily sales (columns D through M)
                         for (let day = 1; day <= 10; day++) {
                             const colIndex = 3 + (day - 1); // D=3, E=4, F=5, etc.
                             const dayValue = parseIndonesianNumber(row[colIndex] || '0');
+                            am.dailySales[`d${day}`] = dayValue;
                             am.totalSales += dayValue;
-                            am.dailySales.push(dayValue);
                         }
                         
                         am.achievementPercent = am.totalTarget > 0 ? (am.totalSales / am.totalTarget) * 100 : 0;
@@ -795,65 +785,6 @@
             } catch (error) {
                 console.error('Error fetching AM data:', error);
                 return [];
-            }
-        }
-
-        // Update AM Performance Table
-        async function updateAMTable() {
-            try {
-                const amData = await fetchPivotAMData();
-                const sortedAMData = amData.sort((a, b) => b.achievementPercent - a.achievementPercent);
-                
-                const tableBody = document.getElementById('amTableBody');
-                
-                if (sortedAMData.length === 0) {
-                    tableBody.innerHTML = `
-                        <tr>
-                            <td colspan="14" class="text-center py-8 text-gray-500">
-                                <i class="fas fa-exclamation-triangle mr-2"></i>
-                                No Area Manager data available
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-                
-                tableBody.innerHTML = sortedAMData.map(am => {
-                    // Determine achievement class
-                    let achievementClass = 'achievement-poor';
-                    if (am.achievementPercent >= 100) {
-                        achievementClass = 'achievement-excellent';
-                    } else if (am.achievementPercent >= 90) {
-                        achievementClass = 'achievement-good';
-                    } else if (am.achievementPercent >= 70) {
-                        achievementClass = 'achievement-average';
-                    }
-                    
-                    return `
-                        <tr class="hover:bg-gray-50">
-                            <td class="am-name">${am.name}</td>
-                            <td class="target-col">${formatRupiahShort(am.totalTarget)}</td>
-                            ${am.dailySales.map((sale, index) => `
-                                <td class="day-sales-cell ${sale > 0 ? 'font-semibold text-blue-700' : 'text-gray-400'}">
-                                    ${formatRupiahShort(sale)}
-                                </td>
-                            `).join('')}
-                            <td class="achievement-col font-bold text-green-700">${formatRupiahShort(am.totalSales)}</td>
-                            <td class="achievement-col ${achievementClass}">${am.achievementPercent.toFixed(1)}%</td>
-                        </tr>
-                    `;
-                }).join('');
-                
-            } catch (error) {
-                console.error('Error updating AM table:', error);
-                document.getElementById('amTableBody').innerHTML = `
-                    <tr>
-                        <td colspan="14" class="text-center py-8 text-red-500">
-                            <i class="fas fa-exclamation-triangle mr-2"></i>
-                            Error loading Area Manager data
-                        </td>
-                    </tr>
-                `;
             }
         }
 
@@ -976,8 +907,8 @@
                 startCountdown();
                 updateDailyProgress();
                 updateNationalProgress();
-                updateAMTable(); // Add AM Table update
                 updateMedalLeaderboards();
+                updateAreaManagerTable();
                 populateFilters();
                 updateOutletDisplay();
                 updateBottomPerformers();
@@ -1003,8 +934,8 @@
                     applyFilters();
                     updateDailyProgress();
                     updateNationalProgress();
-                    updateAMTable(); // Refresh AM Table
                     updateMedalLeaderboards();
+                    updateAreaManagerTable();
                     updateBottomPerformers();
                     updateCharts();
                 }
@@ -1141,6 +1072,36 @@
                 }).join('');
             } catch (error) {
                 console.error('Error updating AM leaderboard:', error);
+            }
+        }
+
+        async function updateAreaManagerTable() {
+            try {
+                const amData = await fetchPivotAMData();
+                const sortedData = amData.sort((a, b) => b.achievementPercent - a.achievementPercent);
+                
+                const tableBody = document.getElementById('amTableBody');
+                tableBody.innerHTML = sortedData.map(am => {
+                    const achievementClass = am.achievementPercent >= 100 ? 'achievement-excellent' :
+                                           am.achievementPercent >= 90 ? 'achievement-good' :
+                                           am.achievementPercent >= 70 ? 'achievement-average' : 'achievement-poor';
+                    
+                    return `
+                        <tr>
+                            <td class="am-name-col">${am.name}</td>
+                            <td class="target-col">${formatMillion(am.totalTarget)}</td>
+                            ${[1,2,3,4,5,6,7,8,9,10].map(day => {
+                                const dailyValue = am.dailySales[`d${day}`] || 0;
+                                return `<td>${dailyValue > 0 ? formatMillion(dailyValue) : '-'}</td>`;
+                            }).join('')}
+                            <td><strong>${formatMillion(am.totalSales)}</strong></td>
+                            <td class="achievement-col ${achievementClass}">${am.achievementPercent.toFixed(1)}%</td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error updating Area Manager table:', error);
+                document.getElementById('amTableBody').innerHTML = '<tr><td colspan="14" class="text-center text-red-600">Error loading Area Manager data</td></tr>';
             }
         }
 
