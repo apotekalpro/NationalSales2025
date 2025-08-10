@@ -367,13 +367,13 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <!-- Top 5 Outlets by Achievement % -->
                     <div class="card-enhanced rounded-2xl shadow-xl p-8">
-                        <h3 class="text-xl font-bold text-center mb-6 text-gray-800">Top 5 Outlets by Achievement %</h3>
+                        <h3 class="text-xl font-bold text-center mb-6 text-gray-800" id="topOutletsByPercentTitle">Top 5 Outlets by Achievement %</h3>
                         <div id="topOutletsByPercent" class="space-y-4"></div>
                     </div>
                     
                     <!-- Top 5 Outlets by Sales -->
                     <div class="card-enhanced rounded-2xl shadow-xl p-8">
-                        <h3 class="text-xl font-bold text-center mb-6 text-gray-800">Top 5 Outlets by Sales</h3>
+                        <h3 class="text-xl font-bold text-center mb-6 text-gray-800" id="topOutletsBySalesTitle">Top 5 Outlets by Sales</h3>
                         <div id="topOutletsBySales" class="space-y-4"></div>
                     </div>
                     
@@ -1009,10 +1009,16 @@
         }
 
         async function updateMedalLeaderboards() {
-            // Top 5 Outlets by Achievement % (using Column G - Day 1 %)
+            const currentDay = getCurrentCampaignDay();
+            
+            // Update titles to show current day
+            document.getElementById('topOutletsByPercentTitle').textContent = `Top 5 Outlets by Achievement % (D${currentDay})`;
+            document.getElementById('topOutletsBySalesTitle').textContent = `Top 5 Outlets by Sales (D${currentDay})`;
+
+            // Top 5 Outlets by Achievement % (using current day percentage)
             const outletsByPercent = [...allOutlets]
-                .filter(outlet => outlet.d1Percent > 0) // Only outlets with Day 1 data
-                .sort((a, b) => b.d1Percent - a.d1Percent)
+                .filter(outlet => outlet[`d${currentDay}Percent`] > 0) // Only outlets with current day data
+                .sort((a, b) => b[`d${currentDay}Percent`] - a[`d${currentDay}Percent`])
                 .slice(0, 5);
 
             const percentContainer = document.getElementById('topOutletsByPercent');
@@ -1024,15 +1030,15 @@
                         <div class="text-3xl mb-2">${medals[index]}</div>
                         <h4 class="font-bold text-sm text-gray-800">${outlet.name}</h4>
                         <p class="text-xs text-gray-600 mb-1">${outlet.am}</p>
-                        <p class="text-lg font-bold text-gray-900">${outlet.d1Percent.toFixed(1)}%</p>
+                        <p class="text-lg font-bold text-gray-900">${outlet[`d${currentDay}Percent`].toFixed(1)}%</p>
                     </div>
                 `;
             }).join('');
 
-            // Top 5 Outlets by Sales (using Column F - Day 1 Sales)
+            // Top 5 Outlets by Sales (using current day sales)
             const outletsBySales = [...allOutlets]
-                .filter(outlet => outlet.d1 > 0) // Only outlets with Day 1 sales
-                .sort((a, b) => b.d1 - a.d1)
+                .filter(outlet => outlet[`d${currentDay}`] > 0) // Only outlets with current day sales
+                .sort((a, b) => b[`d${currentDay}`] - a[`d${currentDay}`])
                 .slice(0, 5);
 
             const salesContainer = document.getElementById('topOutletsBySales');
@@ -1044,12 +1050,12 @@
                         <div class="text-3xl mb-2">${medals[index]}</div>
                         <h4 class="font-bold text-sm text-gray-800">${outlet.name}</h4>
                         <p class="text-xs text-gray-600 mb-1">${outlet.am}</p>
-                        <p class="text-sm font-bold text-gray-900">${formatRupiah(outlet.d1)}</p>
+                        <p class="text-sm font-bold text-gray-900">${formatRupiah(outlet[`d${currentDay}`])}</p>
                     </div>
                 `;
             }).join('');
 
-            // Top 3 Area Managers (from Pivot Target AM sheet)
+            // Top 3 Area Managers (from Pivot Target AM sheet) - unchanged
             try {
                 const amData = await fetchPivotAMData();
                 const topAMs = amData
